@@ -1055,8 +1055,10 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
             function closeLightbox() {
                 lightbox.classList.add('hidden');
                 // Restore scroll position
+                const scrollY = Math.abs(parseInt(document.body.style.top)) || 0;
                 document.body.classList.remove('modal-open');
                 document.body.style.top = '';
+                window.scrollTo(0, scrollY);
                 lightboxImage.src = '';
             }
 
