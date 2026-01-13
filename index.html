@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>nIpxel | The Haptic Glove Controller</title>
+    
+    <!-- OGP Tags for Social Media -->
+    <meta property="og:title" content="nIpxel | The Haptic Glove Controller" />
+    <meta property="og:description" content="触覚グローブコントローラー - 次世代のVR/AR体験を実現" />
+    <meta property="og:image" content="https://nipxel.netlify.app/Pictures/TitlePC.PNG" />
+    <meta property="og:url" content="https://nipxel.netlify.app/" />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#ff3b1f" />
+    
+    <!-- Favicon -->
+    <link rel="icon" href="Pictures/Logo.PNG" type="image/png">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Changed 'Rock Salt' to 'Caveat' -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Inter:wght@200;400;600;800&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans JP', 'sans-serif'],
+                        mono: ['Courier New', 'monospace'],
+                        // Custom handwriting font changed to Caveat
+                        hand: ['Caveat', 'cursive'],
+                    },
+                    colors: {
+                        // Dark Mode Palette
+                        black: '#050505',
+                        white: '#f5f5f5',
+                        gray: {
+                            900: '#121212',
+                            800: '#1e1e1e',
+                            600: '#4b5563', 
+                            400: '#9ca3af',
+                            200: '#e5e7eb',
+                        },
+                        // Neon Vermilion
+                        neon: '#ff3b1f', 
+                    },
+                    letterSpacing: {
+                        tighter: '-0.05em',
+                        widest: '0.2em',
+                    },
+                }
+            }
+        }
+
+        // Translation Dictionary
+        const translations = {
+            en: {
+                concept: "Concept",
+                interface: "Interface",
+                design: "Design",
+                cases: "Cases",
+                specs: "Specs",
+                conceptLabel: "CONCEPT",
+                conceptTitle: "Redefining the Experience of Swinging.",
+                conceptDesc1: "nIpxel is a glove-type controller specialized in the \"swinging experience\", capturing finger orientation (posture) and providing vibration feedback proportional to the strength of the swing (acceleration).",
+                conceptDesc2: "Finger posture and acceleration are measured by a 9-axis sensor (BNO055) mounted on the upper part of an I-shaped attachment, and haptic feedback is output via a vibration motor embedded below. This creates a sensation where intended attacks or gestures are transmitted directly into space.",
+                interfaceLabel: "INTERFACE",
+                interfaceTitle: "I-Shaped Attachment",
+                interfaceSubtitle1: "Finger Concentration",
+                interfaceDesc1: "To enhance the experience of attacks projecting in the direction shown by the fingertip, the mounting position was set on the finger side rather than the back of the hand.",
+                interfaceSubtitle2: "Pinch Structure",
+                interfaceDesc2: "The 9-axis sensor and vibration motor are consolidated into an I-shaped unit. By adopting a finger-pinch method rather than a ring type, it flexibly adapts to hand and finger size differences, achieving both directivity of the fingertip and effective feedback transmission.",
+                ergonomicsLabel: "ERGONOMICS",
+                ergonomicsTitle: "Organic Feel of Wear. 135° Functional Beauty.",
+                ergo1Title: "135° Curvature",
+                ergo1Desc: "The housing features a 135° bend shape, naturally following the curvature between the index and middle fingers and the ring and pinky fingers on the back of the hand.",
+                ergo2Title: "Tapered Profile",
+                ergo2Desc: "By tapering toward the pinky side, we achieved both high wearability and a sharp, compact feel.",
+                ergo3Title: "Integration",
+                ergo3Desc: "The microcontroller (Lolin32 Lite), LiPo battery, wireless microphone, and custom circuit board are all housed within this compact enclosure.",
+                useCases: "USE CASES",
+                useCasesTitle: "Implementation Scenarios",
+                einmadoTitle: "Einmado",
+                einmadoCategory: "Arcade Game",
+                einmadoDesc: "A new style competitive action game where you chant with your voice and cast \"magic\" with a swing of your hand.",
+                einmadoDetail: "Voice x Gesture: Use hand gestures to activate magic, and the magic flies in the direction of the gesture during attacks. Voice casting determines attack/defense power\nAnaglyph Display: With red and green filters, the same screen shows different worlds to opponents\nHaptics: When hit, the controller vibrates finely, letting you \"feel\" the damage.",
+                comingSoon: "Coming Soon",
+                futureApp: "Future Application",
+                specs: "Technical Specifications",
+                microcontroller: "Microcontroller",
+                microcontrollerValue: "ESP32 (Lolin32 Lite)",
+                sensors: "Sensors",
+                sensorsValue: "BNO055 (9-Axis Absolute Orientation)",
+                sensorsDesc: "Accelerometer, Gyroscope, Magnetometer",
+                haptics: "Haptics",
+                hapticsValue: "High-response Vibration Motor",
+                connectivity: "Connectivity",
+                connectivityValue: "Wireless Mic Transmission (Audio-based)",
+                connectivityDesc: "Wi-Fi / Bluetooth (ESP32 Capability)",
+                power: "Power",
+                powerValue: "Integrated Li-Po Battery",
+                contactCreator: "Contact Creator",
+                sourceCode: "Source Code",
+                theCreator: "THE CREATOR",
+                creatorTitle: "Creator",
+                creatorName: "Nakamoo",
+                creatorRole: "Self-proclaimed Designer",
+                creatorBio1: "Oversaw all processes from conception to final implementation of nIpxel, including hardware design, firmware implementation, and housing design.",
+                creatorBio2: "By implementing physical feedback, I aim to dissolve the boundary between humans and the digital world, creating more intuitive and immersive experiences (ultimate UX).",
+                creatorBio3: "A student engineer passionate about creating and presenting.",
+                portfolio: "Portfolio",
+                contact: "Contact",
+                tagline1: "Impact to the fingertips. Immersion to your hand.",
+                tagline2: "Feel the Impact. Redefine the Virtual.",
+                imageDisclaimer: "※ Images shown are AI-processed versions of actual controller photographs.",
+                scrollExplore: "Scroll to Explore",
+                scrollExploreApps: "SCROLL TO EXPLORE APPLICATIONS →",
+                overview: "Overview",
+                technicalDetail: "Technical Detail",
+                detailLink: "View Details",
+                modalClose: "Close",
+            },
+            ja: {
+                concept: "Concept",
+                interface: "Interface",
+                design: "Design",
+                cases: "Cases",
+                specs: "Specs",
+                conceptLabel: "CONCEPT",
+                conceptTitle: "\"振る体験\"を、再定義する。",
+                conceptDesc1: "nIpxelは、指の向き（姿勢）を取得し、振りの強さ（厳密には加速度）に応じた振動を返す、\"振る体験\"に特化したグローブ型コントローラです。",
+                conceptDesc2: "指先の姿勢・加速度はI字型アタッチメント上側に搭載した9軸センサ（BNO055）で計測し、下側に内蔵した振動モータで触覚フィードバックを出力。意図した攻撃や指示が、空間へダイレクトに伝わる感覚を実現します。",
+                interfaceLabel: "INTERFACE",
+                interfaceTitle: "I字型アタッチメント",
+                interfaceSubtitle1: "指先への集約",
+                interfaceDesc1: "指先で示した方向に攻撃が正確に出る体験を高めるため、搭載位置を手背ではなく指側に設定しました。",
+                interfaceSubtitle2: "挟み込み構造",
+                interfaceDesc2: "9軸センサと振動モータをI字ユニットへ集約。リング型ではなく指で挟み込む方式を採用し、手や指のサイズ差に柔軟に追従。指先の指向性とフィードバック伝達性を両立しています。",
+                ergonomicsLabel: "ERGONOMICS",
+                ergonomicsTitle: "有機的な装着感。135°の機能美。",
+                ergo1Title: "135° Curvature",
+                ergo1Desc: "筐体は135°の屈曲形状とし、手背における示・中指側と環・小指側の曲率に自然に追従します。",
+                ergo2Title: "Tapered Profile",
+                ergo2Desc: "小指側へ向かうにつれて厚みを低減するプロファイルにより、高い装着性とエッジの効いたコンパクト感を確保しました。",
+                ergo3Title: "Integration",
+                ergo3Desc: "マイコン(Lolin32 Lite)、リポバッテリー、無線マイク、自作基板をこのコンパクトな筐体内に全て内蔵。",
+                useCases: "USE CASES",
+                useCasesTitle: "実装シナリオ",
+                einmadoTitle: "詠印魔道",
+                einmadoCategory: "Arcade Game",
+                einmadoDesc: "声で詠唱し、手の一振りで\"魔法\"を撃つ新感覚の対戦アクションゲーム。",
+                einmadoDetail: "詠唱 × ジェスチャー：手のジェスチャーで魔法を発動し攻撃時はジェスチャーの向きに魔法が飛ぶ．詠唱で攻撃/防御力が決まる\nアナグリフ表示：赤・緑のフィルターで、同じ画面でも相手とは異なる世界が見える\nハプティクス：被弾時はコントローラが小刻みに震え、ダメージを\"触覚\"で実感",
+                comingSoon: "Coming Soon",
+                futureApp: "Future Application",
+                specs: "Technical Specifications",
+                microcontroller: "Microcontroller",
+                microcontrollerValue: "ESP32 (Lolin32 Lite)",
+                sensors: "Sensors",
+                sensorsValue: "BNO055 (9-Axis Absolute Orientation)",
+                sensorsDesc: "Accelerometer, Gyroscope, Magnetometer",
+                haptics: "Haptics",
+                hapticsValue: "High-response Vibration Motor",
+                connectivity: "Connectivity",
+                connectivityValue: "Wireless Mic Transmission (Audio-based)",
+                connectivityDesc: "Wi-Fi / Bluetooth (ESP32 Capability)",
+                power: "Power",
+                powerValue: "Integrated Li-Po Battery",
+                contactCreator: "Contact Creator",
+                sourceCode: "Source Code",
+                theCreator: "THE CREATOR",
+                creatorTitle: "製作者",
+                creatorName: "なかむー",
+                creatorRole: "自称 Designer",
+                creatorBio1: "nIpxelの構想からハードウェア設計、ファームウェア実装、そして筐体デザインに至るまで、すべての工程を一貫して統括。",
+                creatorBio2: "身体的フィードバックを実装することで、人間とデジタル世界の境界線を溶かし、より直感的で没入感のある体験（究極のUX）を創出することを目指しています。",
+                creatorBio3: "モノづくりとプレゼンの好きな学生エンジニア",
+                portfolio: "Portfolio",
+                contact: "Contact",
+                tagline1: "衝撃を、指先に。没入を、その手に。",
+                tagline2: "Feel the Impact. Redefine the Virtual.",
+                imageDisclaimer: "※ 掲載されている画像は、実際のコントローラの画像をAIで加工したものです。",
+                scrollExplore: "Scroll to Explore",
+                scrollExploreApps: "SCROLL TO EXPLORE APPLICATIONS →",
+                overview: "Overview",
+                technicalDetail: "Technical Detail",
+                detailLink: "詳細を見る",
+                modalClose: "Close",
+            }
+        };
+
+        // Language state
+        let currentLanguage = localStorage.getItem('language') || 'ja';
+    </script>
+
+    <style>
+        /* Custom Utilities */
+        body {
+            background-color: #050505;
+            color: #f5f5f5;
+            position: relative;
+        }
+
+        /* Fixed Background Layer */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: url('Pictures/TitlePC.PNG');
+            background-position: center;
+            background-size: contain;
+            background-repeat: no-repeat;
+            z-index: -1;
+        }
+
+        @media (orientation: portrait) {
+            body::before {
+                background-image: url('Pictures/TitleMobile.PNG');
+                background-size: cover;
+            }
+            
+            /* ヘッダーロゴを縦画面時に非表示 */
+            header img {
+                opacity: 0;
+                transition: opacity 0.5s ease;
+            }
+            
+            /* スクロールで背景が隠れたらロゴを表示 */
+            body.scrolled header img {
+                opacity: 1;
+            }
+        }
+        
+        @media (orientation: landscape) {
+            body::before {
+                background-size: 100% auto;
+                background-position: center top;
+            }
+        }
+
+        /* Carousel Mobile Styles */
+        @media (max-width: 768px) {
+            #carousel-container {
+                scroll-snap-type: x mandatory;
+                scroll-padding: 0 calc(50vw - 42.5vw);
+                padding-left: 7.5vw !important;
+                padding-right: 7.5vw !important;
+            }
+            
+            .carousel-card {
+                scroll-snap-align: center;
+                scroll-snap-stop: always;
+            }
+        }
+
+        .reveal-text {
+            clip-path: inset(0 0 100% 0);
+            transition: clip-path 1s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        .reveal-text.visible {
+            clip-path: inset(0 0 0 0);
+        }
+
+        .fade-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Brush Stroke Animation & Texture */
+        .brush-path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            transition: stroke-dashoffset 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+            
+            stroke: #ff3b1f; 
+            stroke-width: 8; 
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+            
+            filter: url(#dryBrushTexture);
+            
+            opacity: 0.9;
+        }
+        
+        .brush-path.thin {
+            stroke-width: 6;
+        }
+
+        .brush-path.visible {
+            stroke-dashoffset: 0;
+        }
+
+        .scale-reveal {
+            transform: scale(1.1);
+            filter: blur(10px);
+            opacity: 0;
+            transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                        filter 1.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+                        opacity 1.2s ease;
+        }
+        .scale-reveal.visible {
+            transform: scale(1);
+            filter: blur(0);
+            opacity: 1;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Prevent background scroll when modal is open */
+        .modal-open {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            overflow: hidden;
+        }
+
+        /* Modal Detail Styles */
+        #modal-detail {
+            line-height: 1.8;
+        }
+
+        #modal-detail strong {
+            color: #ff3b1f;
+            font-weight: 600;
+        }
+
+        #modal-detail em {
+            font-style: italic;
+            color: #e5e7eb;
+        }
+
+        #modal-detail ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #modal-detail li {
+            margin-bottom: 0.75rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        #modal-detail li::before {
+            content: '–';
+            position: absolute;
+            left: 0;
+            color: #ff3b1f;
+            font-weight: bold;
+        }
+        
+
+        /* Image Lightbox Styles */
+        .clickable-image {
+            cursor: zoom-in;
+            transition: filter 0.3s ease;
+        }
+
+        .clickable-image:hover {
+            filter: brightness(1.1);
+        }
+
+        #image-lightbox {
+            animation: fadeIn 0.3s ease;
+        }
+
+        #image-lightbox.hidden {
+            animation: fadeOut 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        #lightbox-image {
+            animation: zoomIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            object-fit: contain;
+            max-height: 90vh !important;
+            max-width: 90vw !important;
+            width: auto !important;
+            height: auto !important;
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Parallax Section - Responsive Background Image */
+        #parallax-section {
+            background: transparent;
+        }
+
+        #parallax-section .parallax-overlay {
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        @media (orientation: portrait) {
+            body {
+                background-image: url('Pictures/TitleMobile.PNG');
+            }
+        }
+    </style>
+</head>
+<body class="antialiased overflow-x-hidden selection:bg-neon selection:text-white">
+
+    <!-- GLOBAL SVG FILTER DEFINITION -->
+    <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" aria-hidden="true">
+        <defs>
+            <filter id="dryBrushTexture" x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox">
+                <feTurbulence type="fractalNoise" baseFrequency="0.05 0.5" numOctaves="5" seed="0" result="noise"/>
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="8" xChannelSelector="R" yChannelSelector="G" result="distorted"/>
+                <feColorMatrix type="matrix" in="noise" values="
+                    0 0 0 0 0
+                    0 0 0 0 0
+                    0 0 0 0 0
+                    1 0 0 5 -2.5" result="alphaMask"/>
+                <feComposite operator="in" in="distorted" in2="alphaMask" result="textured"/>
+                <feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="#ff3b1f" flood-opacity="0.8" in="textured" result="final"/>
+            </filter>
+        </defs>
+    </svg>
+
+    <!-- Fixed Header -->
+    <header class="fixed top-0 left-0 w-full z-50 mix-blend-difference px-6 py-6 flex justify-between items-center pointer-events-none">
+        <div class="pointer-events-auto">
+            <a href="#">
+                <img src="Pictures/Logo.PNG" 
+                     alt="nIpxel Logo" 
+                     class="h-40 w-auto block">
+            </a>
+        </div>
+        <nav class="pointer-events-auto hidden md:flex space-x-12 text-xs font-bold uppercase tracking-widest text-white">
+            <a href="#concept" class="hover:text-neon transition-colors duration-300" data-i18n="concept">Concept</a>
+            <a href="#interface" class="hover:text-neon transition-colors duration-300" data-i18n="interface">Interface</a>
+            <a href="#ergonomics" class="hover:text-neon transition-colors duration-300" data-i18n="design">Design</a>
+            <a href="#cases" class="hover:text-neon transition-colors duration-300" data-i18n="cases">Cases</a>
+            <a href="#specs" class="hover:text-neon transition-colors duration-300" data-i18n="specs">Specs</a>
+        </nav>
+        <div class="pointer-events-auto flex items-center gap-4">
+            <button id="lang-toggle" class="inline-block border border-white/30 text-white px-4 py-2 rounded-full text-xs font-bold uppercase hover:bg-white/10 hover:border-white transition-colors duration-300">
+                <span id="lang-label">EN</span>
+            </button>
+            <a href="#creators" class="inline-block border border-white/30 text-white px-6 py-2 rounded-full text-xs font-bold uppercase hover:bg-neon hover:border-neon hover:text-white transition-colors duration-300">
+                Contact
+            </a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative h-screen w-full flex items-center justify-center overflow-hidden">
+        <div class="absolute bottom-12 left-6 z-20 flex flex-col items-start gap-2 fade-up" style="transition-delay: 500ms;">
+            <div class="w-12 h-[1px] bg-white"></div>
+            <span class="text-[10px] uppercase tracking-widest text-gray-400" data-i18n="scrollExplore">Scroll to Explore</span>
+        </div>
+    </section>
+
+    <!-- Concept Section -->
+    <section id="concept" class="relative py-32 px-6 md:px-12 z-10" style="background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.95) 15%, rgba(0, 0, 0, 0.95) 100%);">
+        <div class="backdrop-blur-sm absolute inset-0 -z-10"></div>
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+            <div class="order-2 md:order-1 relative">
+                <!-- 
+                    Slideshow Container 
+                    Added ID 'concept-slideshow' for JS targeting
+                -->
+                <div id="concept-slideshow" class="w-full h-auto min-h-[500px] overflow-hidden rounded-sm relative scale-reveal trigger-on-scroll bg-black/20">
+                    <!-- Image 1: Initially Visible -->
+                    <img src="Pictures/Slide01.JPG" 
+                         alt="Concept Prototype 1" 
+                         class="absolute inset-0 w-full h-full object-contain transition-all duration-[2000ms] ease-in-out opacity-100 scale-100 z-10 slide-image">
+                    
+                    <!-- Image 2: Initially Hidden -->
+                    <!-- 2枚目の画像 (例: 使用中のイメージや別のアングル) -->
+                    <img src="Pictures/Slide02.jpg" 
+                         alt="Concept Prototype 2" 
+                         class="absolute inset-0 w-full h-full object-contain transition-all duration-[2000ms] ease-in-out opacity-0 scale-110 z-0 slide-image">
+                </div>
+                <div class="absolute -bottom-6 -right-6 text-9xl font-bold text-white/5 pointer-events-none select-none">01</div>
+            </div>
+            
+            <div class="order-1 md:order-2">
+                <span class="text-xs font-mono text-gray-500 mb-4 block tracking-widest fade-up trigger-on-scroll" data-i18n="conceptLabel">CONCEPT</span>
+                <div class="relative inline-block mb-8">
+                    <h2 class="text-4xl md:text-6xl font-bold leading-[1.1] tracking-tight fade-up trigger-on-scroll relative z-10" data-i18n="conceptTitle">
+                        “振る体験”を、<br>再定義する。
+                    </h2>
+                    <div class="absolute -bottom-4 left-0 w-full h-10 pointer-events-none z-0">
+                        <svg viewBox="0 0 400 30" preserveAspectRatio="none" class="w-full h-full overflow-visible">
+                            <path d="M5,15 Q100,2 200,12 T390,8" fill="none" class="brush-path trigger-draw" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="space-y-6 text-gray-400 font-light leading-relaxed fade-up trigger-on-scroll">
+                    <p data-i18n="conceptDesc1">
+                        nIpxelは、指の向き（姿勢）を取得し、振りの強さ（厳密には加速度）に応じた振動を返す、"振る体験"に特化したグローブ型コントローラです。
+                    </p>
+                    <p data-i18n="conceptDesc2">
+                        指先の姿勢・加速度はI字型アタッチメント上側に搭載した9軸センサ（BNO055）で計測し、下側に内蔵した振動モータで触覚フィードバックを出力。
+                        意図した攻撃や指示が、空間へダイレクトに伝わる感覚を実現します。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interface Section -->
+    <section id="interface" class="relative py-32 px-6 md:px-12 bg-[#0a0a0a]/95 backdrop-blur-sm border-t border-white/5">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-24 md:flex justify-between items-end">
+                <div class="max-w-2xl">
+                    <span class="text-xs font-mono text-gray-500 mb-4 block tracking-widest fade-up trigger-on-scroll" data-i18n="interfaceLabel">INTERFACE</span>
+                    <div class="relative inline-block">
+                        <h2 class="text-4xl md:text-6xl font-bold leading-[1.1] tracking-tight fade-up trigger-on-scroll relative z-10" data-i18n="interfaceTitle">
+                            I字型アタッチメント
+                        </h2>
+                        <div class="absolute -bottom-4 left-0 w-full h-10 pointer-events-none z-0">
+                            <svg viewBox="0 0 300 30" preserveAspectRatio="none" class="w-full h-full overflow-visible">
+                                <path d="M2,15 C50,5 150,18 295,8" fill="none" class="brush-path trigger-draw" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden md:block text-right fade-up trigger-on-scroll">
+                    <p class="text-xs text-gray-500 font-mono">SENSOR ORIENTATION UNIT</p>
+                    <p class="text-xs text-gray-500 font-mono">DIRECT HAPTIC FEEDBACK</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="col-span-1 md:col-span-2 relative h-[500px] overflow-hidden rounded-sm group bg-black/20">
+                    <img src="Pictures/ILetter.jpeg" alt="Sketch Design" class="w-full h-full object-contain opacity-80 group-hover:opacity-100 transition-opacity duration-500 scale-reveal trigger-on-scroll">
+                </div>
+                
+                <div class="col-span-1 flex flex-col justify-center space-y-8 pl-0 md:pl-8 border-l border-white/10">
+                    <div class="fade-up trigger-on-scroll">
+                        <h3 class="text-xl font-bold mb-3 text-white" data-i18n="interfaceSubtitle1">指先への集約</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed" data-i18n="interfaceDesc1">
+                            指先で示した方向に攻撃が正確に出る体験を高めるため、搭載位置を手背ではなく指側に設定しました。
+                        </p>
+                    </div>
+                    
+                    <div class="fade-up trigger-on-scroll">
+                        <h3 class="text-xl font-bold mb-3 text-white" data-i18n="interfaceSubtitle2">挟み込み構造</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed" data-i18n="interfaceDesc2">
+                            9軸センサと振動モータをI字ユニットへ集約。リング型ではなく指で挟み込む方式を採用し、手や指のサイズ差に柔軟に追従。指先の指向性とフィードバック伝達性を両立しています。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ergonomics Section -->
+    <section id="ergonomics" class="relative py-32 px-6 md:px-12 bg-black/95 backdrop-blur-sm">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20 items-start">
+            <div class="sticky top-32">
+                <span class="text-xs font-mono text-gray-500 mb-4 block tracking-widest fade-up trigger-on-scroll" data-i18n="ergonomicsLabel">ERGONOMICS</span>
+                <div class="relative inline-block mb-12">
+                    <h2 class="text-4xl md:text-6xl font-bold leading-[1.1] tracking-tight fade-up trigger-on-scroll relative z-10" data-i18n="ergonomicsTitle">
+                        有機的な装着感。<br>135°の機能美。
+                    </h2>
+                    <div class="absolute -bottom-4 left-0 w-3/4 h-10 pointer-events-none z-0">
+                        <svg viewBox="0 0 300 30" preserveAspectRatio="none" class="w-full h-full overflow-visible">
+                            <path d="M5,15 C80,5 120,22 290,10" fill="none" class="brush-path trigger-draw" />
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="space-y-8 fade-up trigger-on-scroll">
+                    <div class="flex gap-6 border-t border-white/10 pt-6">
+                        <span class="text-xs font-mono text-gray-500 mt-1">01</span>
+                        <div>
+                            <h4 class="text-lg font-bold text-white mb-2" data-i18n="ergo1Title">135° Curvature</h4>
+                            <p class="text-sm text-gray-400 leading-relaxed" data-i18n="ergo1Desc">
+                                筐体は135°の屈曲形状とし、手背における示・中指側と環・小指側の曲率に自然に追従します。
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-6 border-t border-white/10 pt-6">
+                        <span class="text-xs font-mono text-gray-500 mt-1">02</span>
+                        <div>
+                            <h4 class="text-lg font-bold text-white mb-2" data-i18n="ergo2Title">Tapered Profile</h4>
+                            <p class="text-sm text-gray-400 leading-relaxed" data-i18n="ergo2Desc">
+                                小指側へ向かうにつれて厚みを低減するプロファイルにより、高い装着性とエッジの効いたコンパクト感を確保しました。
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-6 border-t border-white/10 pt-6">
+                        <span class="text-xs font-mono text-gray-500 mt-1">03</span>
+                        <div>
+                            <h4 class="text-lg font-bold text-white mb-2" data-i18n="ergo3Title">Integration</h4>
+                            <p class="text-sm text-gray-400 leading-relaxed" data-i18n="ergo3Desc">
+                                マイコン(Lolin32 Lite)、リポバッテリー、無線マイク、自作基板をこのコンパクトな筐体内に全て内蔵。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image Grid (5 Images) -->
+            <div class="grid grid-cols-2 gap-4 bg-black/40 backdrop-blur-sm p-4 rounded-sm md:bg-transparent md:backdrop-blur-none md:p-0">
+                <div class="space-y-4 translate-y-12">
+                    <!-- Image 1 -->
+                    <img src="Pictures/Beauty01.PNG" 
+                         alt="Body Detail 1" 
+                         class="w-full h-auto rounded-sm grayscale hover:grayscale-0 transition-all duration-500 scale-reveal trigger-on-scroll">
+                    
+                    <!-- Image 2 -->
+                    <img src="Pictures/Beauty02.PNG" 
+                         alt="Body Side" 
+                         class="w-full h-auto rounded-sm grayscale hover:grayscale-0 transition-all duration-500 scale-reveal trigger-on-scroll">
+                    
+                    <!-- Image 3 -->
+                    <img src="Pictures/Beauty03.png" 
+                         alt="Internal Component" 
+                         class="w-full h-auto rounded-sm grayscale hover:grayscale-0 transition-all duration-500 scale-reveal trigger-on-scroll">
+                </div>
+                
+                <div class="space-y-4">
+                    <!-- Image 4: Body Texture Placeholder (Changed to explicit texture image) -->
+                    <img src="Pictures/Beauty04.jpg" 
+                         alt="Body Texture" 
+                         class="w-full h-auto rounded-sm grayscale hover:grayscale-0 transition-all duration-500 scale-reveal trigger-on-scroll">
+                    
+                    <!-- Image 5 -->
+                    <div class="w-full rounded-sm overflow-hidden relative group">
+                        <img src="Pictures/Beauty05.jpg" 
+                             alt="Body Detail 5" 
+                             class="w-full h-auto object-contain grayscale hover:grayscale-0 transition-all duration-500 scale-reveal trigger-on-scroll">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300 pointer-events-none"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Parallax / Image Break -->
+    <section id="parallax-section" class="relative h-[60vh] overflow-hidden flex items-center justify-center">
+        <div class="parallax-overlay absolute inset-0"></div>
+    </section>
+
+    <!-- Use Cases Section -->
+    <section id="cases" class="relative py-32 bg-[#080808]/95 backdrop-blur-sm border-t border-white/5 overflow-hidden">
+        <div class="px-6 md:px-12 mb-12 md:flex justify-between items-end max-w-7xl mx-auto">
+            <div>
+                <span class="text-xs font-mono text-gray-500 mb-4 block tracking-widest fade-up trigger-on-scroll" data-i18n="useCases">USE CASES</span>
+                <div class="relative inline-block">
+                    <h2 class="text-3xl md:text-5xl font-bold leading-[1.1] tracking-tight fade-up trigger-on-scroll relative z-10" data-i18n="useCasesTitle">
+                        実装シナリオ
+                    </h2>
+                    <div class="absolute -bottom-4 left-0 w-full h-10 pointer-events-none z-0">
+                        <svg viewBox="0 0 200 20" preserveAspectRatio="none" class="w-full h-full overflow-visible">
+                            <path d="M2,10 C50,18 100,-2 190,12" fill="none" class="brush-path trigger-draw" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="hidden md:block fade-up trigger-on-scroll">
+                <p class="text-xs text-gray-500 font-mono" data-i18n="scrollExploreApps">SCROLL TO EXPLORE APPLICATIONS &rarr;</p>
+            </div>
+        </div>
+
+        <!-- Carousel Container with Navigation -->
+        <div class="relative">
+            <!-- Navigation Arrows (Mobile Only) -->
+            <button id="carousel-prev" class="md:hidden absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/70 border border-white/30 hover:bg-neon hover:border-neon text-white p-3 rounded-full transition-all duration-300 backdrop-blur-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <button id="carousel-next" class="md:hidden absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/70 border border-white/30 hover:bg-neon hover:border-neon text-white p-3 rounded-full transition-all duration-300 backdrop-blur-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+
+            <!-- Horizontal Scroll Container -->
+            <div id="carousel-container" class="flex overflow-x-auto space-x-6 pb-12 no-scrollbar snap-x snap-mandatory fade-up trigger-on-scroll scroll-smooth" style="scroll-padding-left: 24px; padding-left: calc(1.5rem + ((100% - 80rem) / 2)); padding-right: 1.5rem;">
+                
+                <!-- Card 1: 詠印魔道 (Updated) -->
+                <!-- 
+                    Updated description text.
+                -->
+                <div class="js-modal-trigger min-w-[85vw] md:min-w-[400px] bg-white/5 border border-white/5 rounded-sm overflow-hidden hover:bg-white/10 transition-colors duration-500 group snap-center cursor-pointer relative carousel-card"
+                 data-title-ja="詠印魔道"
+                 data-title-en="Einmado"
+                 data-category="Arcade Game"
+                 data-image="https://img.youtube.com/vi/9MgPosLRifY/maxresdefault.jpg"
+                 data-video-id="9MgPosLRifY"
+                 data-link="https://einmado.notion.site/2823ac6092a6806c8df5e15d3366510e"
+                 data-tags-ja="Unity,Projection,テックシーカー2025,いずみ万博2025"
+                 data-tags-en="Unity,Projection,TechSeeker2025,Izumi Expo 2025"
+                 data-description-ja="声の呪文と手のジェスチャーで魔法を発動する、リアル×デジタルの対戦アクション。中二心、解放。"
+                 data-description-en="A new style competitive action game where you chant with your voice and cast "magic" with a swing of your hand."
+                 data-detail-ja="- **詠唱 × ジェスチャー**：ジェスチャーで魔法を発動，詠唱で攻撃/防御力が決まる
+- **アナグリフ表示**：赤・緑のフィルターで、同じ画面でも相手とは異なる世界が見える
+- **ハプティクス**：被弾時はコントローラが小刻みに震え、ダメージを"触覚"で実感"
+                 data-detail-en="Voice x Gesture: Use hand gestures to activate magic, and the magic flies in the direction of the gesture during attacks. Voice casting determines attack/defense power
+Anaglyph Display: With red and green filters, the same screen shows different worlds to opponents
+Haptics: When hit, the controller vibrates finely, letting you feel the damage">
+                <div class="h-64 overflow-hidden relative pointer-events-none">
+                    <!-- YouTube Thumbnail as card image -->
+                    <img src="https://img.youtube.com/vi/9MgPosLRifY/maxresdefault.jpg" alt="詠印魔道" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700">
+                    <div class="absolute top-4 left-4">
+                        <span class="bg-black/50 backdrop-blur-md text-[10px] font-mono border border-white/20 px-2 py-1 text-white uppercase">Arcade Game</span>
+                    </div>
+                    <!-- Play Icon to indicate video content -->
+                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div class="w-12 h-12 bg-black/50 rounded-full flex items-center justify-center border border-white/30 backdrop-blur-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="currentColor" stroke-width="0"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-8 pointer-events-none">
+                    <h3 class="text-xl font-bold mb-3 text-white group-hover:text-neon transition-colors" data-card-title>詠印魔道</h3>
+                    <p class="text-sm text-gray-400 mb-6 leading-relaxed line-clamp-3" data-card-description>
+                        声で詠唱し、手の一振りで“魔法”を撃つ新感覚の対戦アクションゲーム。
+                    </p>
+                    <div class="flex gap-2 flex-wrap">
+                        <span class="text-[10px] border border-white/10 px-2 py-1 text-gray-500">Unity</span>
+                        <span class="text-[10px] border border-white/10 px-2 py-1 text-gray-500">Projection</span>
+                    </div>
+                </div>
+                <div class="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div class="w-8 h-8 rounded-full border border-neon flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff3b1f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Coming Soon -->
+            <div class="carousel-card min-w-[85vw] md:min-w-[400px] bg-white/5 border border-white/5 rounded-sm overflow-hidden flex flex-col items-center justify-center snap-center relative min-h-[450px]">
+                <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+                <div class="text-center z-10 p-8">
+                    <div class="w-12 h-12 mx-auto mb-4 border border-white/10 rounded-full flex items-center justify-center text-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-mono text-gray-500 font-bold mb-2 uppercase tracking-widest">Coming Soon</h3>
+                    <p class="text-xs text-gray-600 font-mono">Future Application #01</p>
+                </div>
+            </div>
+
+            <!-- Card 3: Coming Soon -->
+            <div class="carousel-card min-w-[85vw] md:min-w-[400px] bg-white/5 border border-white/5 rounded-sm overflow-hidden flex flex-col items-center justify-center snap-center relative min-h-[450px]">
+                <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+                <div class="text-center z-10 p-8">
+                    <div class="w-12 h-12 mx-auto mb-4 border border-white/10 rounded-full flex items-center justify-center text-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                    </div>
+                    <h3 class="text-xl font-mono text-gray-500 font-bold mb-2 uppercase tracking-widest">Coming Soon</h3>
+                    <p class="text-xs text-gray-600 font-mono">Future Application #02</p>
+                </div>
+            </div>
+
+            <!-- Spacer for right padding in scroll -->
+            <div class="min-w-[1px]"></div>
+        </div>
+        </div>
+    </section>
+
+    <!-- Specs Section -->
+    <section id="specs" class="py-32 px-6 md:px-12 bg-[#050505]/95 backdrop-blur-sm">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-12 relative">
+                <div class="relative inline-block">
+                    <h2 class="text-2xl font-bold tracking-widest uppercase fade-up trigger-on-scroll relative z-10">Technical Specifications</h2>
+                    <div class="absolute -bottom-2 left-0 w-full h-8 pointer-events-none z-0">
+                        <svg viewBox="0 0 300 20" preserveAspectRatio="none" class="w-full h-full overflow-visible">
+                            <path d="M5,8 Q150,15 295,5" fill="none" class="brush-path thin trigger-draw" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border border-white/10 divide-y divide-white/10 bg-[#0a0a0a] fade-up trigger-on-scroll">
+                <div class="grid grid-cols-1 md:grid-cols-3 p-6 hover:bg-white/5 transition-colors group">
+                    <div class="text-sm text-gray-500 font-mono uppercase py-2 group-hover:text-neon transition-colors" data-i18n="microcontroller">Microcontroller</div>
+                    <div class="col-span-2 text-white font-medium py-2" data-i18n="microcontrollerValue">ESP32 (Lolin32 Lite)</div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 p-6 hover:bg-white/5 transition-colors group">
+                    <div class="text-sm text-gray-500 font-mono uppercase py-2 group-hover:text-neon transition-colors" data-i18n="sensors">Sensors</div>
+                    <div class="col-span-2 text-white font-medium py-2">
+                        <span data-i18n="sensorsValue">BNO055 (9-Axis Absolute Orientation)</span><br>
+                        <span class="text-xs text-gray-500" data-i18n="sensorsDesc">Accelerometer, Gyroscope, Magnetometer</span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 p-6 hover:bg-white/5 transition-colors group">
+                    <div class="text-sm text-gray-500 font-mono uppercase py-2 group-hover:text-neon transition-colors" data-i18n="haptics">Haptics</div>
+                    <div class="col-span-2 text-white font-medium py-2" data-i18n="hapticsValue">High-response Vibration Motor</div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 p-6 hover:bg-white/5 transition-colors group">
+                    <div class="text-sm text-gray-500 font-mono uppercase py-2 group-hover:text-neon transition-colors" data-i18n="connectivity">Connectivity</div>
+                    <div class="col-span-2 text-white font-medium py-2">
+                        <span data-i18n="connectivityValue">Wireless Mic Transmission (Audio-based)</span><br>
+                        <span data-i18n="connectivityDesc">Wi-Fi / Bluetooth (ESP32 Capability)</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 p-6 hover:bg-white/5 transition-colors group">
+                    <div class="text-sm text-gray-500 font-mono uppercase py-2 group-hover:text-neon transition-colors" data-i18n="power">Power</div>
+                    <div class="col-span-2 text-white font-medium py-2" data-i18n="powerValue">Integrated Li-Po Battery</div>
+                </div>
+            </div>
+            
+            <div class="mt-12 text-center fade-up trigger-on-scroll flex flex-col md:flex-row items-center justify-center gap-6">
+                <a href="#creators" class="inline-block border border-white px-8 py-3 text-sm font-bold uppercase hover:bg-neon hover:border-neon hover:text-white transition-all duration-300 shadow-[0_0_0_transparent] hover:shadow-[0_0_20px_rgba(255,59,31,0.5)]" data-i18n="contactCreator">
+                    Contact Creator
+                </a>
+                
+                <!-- GitHub Link Button -->
+                <a href="https://github.com/ArcTech-TechSeeker/Magicling_code" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 border border-white/30 px-8 py-3 text-sm font-bold uppercase hover:bg-white hover:text-black transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                    <span data-i18n="sourceCode">Source Code</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Creators Section -->
+    <section id="creators" class="relative py-32 px-6 md:px-12 bg-black/95 backdrop-blur-sm border-t border-white/5">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-16">
+                <span class="text-xs font-mono text-gray-500 mb-4 block tracking-widest fade-up trigger-on-scroll" data-i18n="theCreator">THE CREATOR</span>
+                <div class="relative inline-block">
+                    <h2 class="text-3xl md:text-5xl font-bold leading-[1.1] tracking-tight fade-up trigger-on-scroll relative z-10" data-i18n="creatorTitle">
+                        製作者
+                    </h2>
+                    <div class="absolute -bottom-4 left-0 w-full h-8 pointer-events-none z-0">
+                        <svg viewBox="0 0 200 15" preserveAspectRatio="none" class="w-full h-full overflow-visible">
+                            <path d="M2,10 C50,5 100,18 190,8" fill="none" class="brush-path trigger-draw" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Single Creator Layout (Dark) -->
+            <div class="max-w-5xl mx-auto bg-[#0a0a0a] border border-white/5 p-6 md:p-12 flex flex-col md:flex-row gap-12 items-center md:items-start fade-up trigger-on-scroll group">
+                <div class="w-full md:w-5/12 aspect-[3/4] md:aspect-[4/5] overflow-hidden rounded-sm grayscale group-hover:grayscale-0 transition-all duration-700 shrink-0 relative">
+                     <img src="Pictures/Creator.jpg" class="object-cover w-full h-full opacity-80 group-hover:opacity-100 transition-opacity duration-700" alt="Creator">
+                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 md:hidden"></div>
+                </div>
+                
+                <div class="flex-1 w-full text-center md:text-left flex flex-col justify-center h-full pt-4 md:pt-8">
+                    <!-- Updated Name -->
+                    <h3 class="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight" data-i18n="creatorName">なかむー</h3>
+                    <!-- Updated Title -->
+                    <p class="text-xs font-mono text-neon mb-8 tracking-[0.2em] uppercase" data-i18n="creatorRole">自称 Designer</p>
+                    
+                    <!-- Updated Description -->
+                    <div class="space-y-6 text-gray-400 leading-relaxed text-sm md:text-base font-light">
+                        <p data-i18n="creatorBio1">
+                            nIpxelの構想からハードウェア設計、ファームウェア実装、そして筐体デザインに至るまで、すべての工程を一貫して統括。
+                        </p>
+                        <p data-i18n="creatorBio2">
+                            身体的フィードバックを実装することで、人間とデジタル世界の境界線を溶かし、より直感的で没入感のある体験（究極のUX）を創出することを目指しています。
+                        </p>
+                        <p data-i18n="creatorBio3">
+                            モノづくりとプレゼンの好きな学生エンジニア
+                        </p>
+                    </div>
+
+                    <!-- Updated Links -->
+                    <div class="mt-10 pt-10 border-t border-white/10 flex flex-wrap gap-8 justify-center md:justify-start text-[10px] font-mono text-gray-500 uppercase tracking-widest">
+                        <a href="https://nakamuportfolio.netlify.app/" target="_blank" rel="noopener noreferrer" class="hover:text-neon transition-colors duration-300">Portfolio</a>
+                        <a href="https://x.com/Rok26661" target="_blank" rel="noopener noreferrer" class="hover:text-neon transition-colors duration-300">X</a>
+                        <a href="https://github.com/naka6ryo" target="_blank" rel="noopener noreferrer" class="hover:text-neon transition-colors duration-300">GITHUB</a>
+                        <a href="mailto:naka6ryo@gmail.com" class="hover:text-neon transition-colors duration-300">CONTACT</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-6 border-t border-white/10 text-center md:text-left bg-black/95 backdrop-blur-sm">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center md:items-end">
+            <div class="mb-8 md:mb-0">
+                <!-- Footer Logo (White Fill) -->
+                <div class="mb-4">
+                    <img src="Pictures/Logo.PNG" 
+                         alt="nIpxel Footer Logo" 
+                         class="h-20 w-auto mx-auto md:mx-0 block">
+                </div>
+                <div class="text-xs text-gray-500 font-mono max-w-sm mx-auto md:mx-0 leading-relaxed text-center md:text-left">
+                    <p class="text-white mb-1" data-i18n="tagline1">衝撃を、指先に。没入を、その手に。</p>
+                    <p class="opacity-70" data-i18n="tagline2">Feel the Impact. Redefine the Virtual.</p>
+                </div>
+            </div>
+            
+            <div class="flex flex-col md:flex-row gap-8 text-xs text-gray-400 font-mono uppercase">
+                <!-- Links consolidated in Creator section -->
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto mt-12 pt-8 border-t border-white/5">
+            <p class="text-[10px] text-gray-500 font-mono mb-4 text-center" data-i18n="imageDisclaimer">※ 掲載されている画像は、実際のコントローラの画像をAIで加工したものです。</p>
+            <div class="flex flex-col md:flex-row justify-between text-[10px] text-gray-600 uppercase font-mono text-center md:text-left gap-2">
+                <span>© 2025 nIpxel Project</span>
+                <span>Made in Japan</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal Structure -->
+    <div id="modal-overlay" class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300 flex items-center justify-center px-4">
+        <div id="modal-content" class="bg-[#0f0f0f] border border-white/10 w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-sm relative scale-95 opacity-0 transition-all duration-300 transform shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+            
+            <!-- Close Button -->
+            <button id="modal-close" class="absolute top-4 right-4 z-50 bg-black/50 border border-white/10 hover:bg-neon hover:border-neon hover:text-white text-gray-400 p-2 rounded-full transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+
+            <div class="grid grid-cols-1 md:grid-cols-2">
+                <!-- Image/Video Side -->
+                <div class="relative h-64 md:h-auto overflow-hidden bg-black group">
+                    <img id="modal-image" src="" alt="Detail" class="w-full h-full object-cover">
+                    
+                    <!-- Iframe for YouTube -->
+                    <div id="modal-iframe-container" class="absolute inset-0 w-full h-full hidden">
+                        <iframe id="modal-iframe" class="w-full h-full" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                    </div>
+                    
+                    <!-- YouTube link button removed -->
+
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#0f0f0f] via-transparent to-transparent md:bg-gradient-to-r pointer-events-none z-10"></div>
+                    <div class="absolute top-6 left-6 pointer-events-none z-10">
+                        <span id="modal-category" class="bg-black/70 backdrop-blur-md text-xs font-mono border border-neon text-neon px-3 py-1 uppercase tracking-wider">Category</span>
+                    </div>
+                </div>
+
+                <!-- Content Side -->
+                <div class="p-8 md:p-12 flex flex-col justify-center h-full">
+                    <h3 id="modal-title" class="text-3xl md:text-4xl font-bold text-white mb-6 leading-tight">Title</h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <span class="text-xs font-mono text-gray-500 uppercase tracking-widest block mb-2">Overview</span>
+                            <p id="modal-description" class="text-sm text-gray-300 leading-relaxed font-light">Description...</p>
+                        </div>
+                        
+                        <div class="pt-4 border-t border-white/5">
+                            <span class="text-xs font-mono text-gray-500 uppercase tracking-widest block mb-2">Technical Detail</span>
+                            <p id="modal-detail" class="text-sm text-gray-400 leading-relaxed whitespace-pre-line">Detail description...</p>
+                        </div>
+                    </div>
+
+                    <div id="modal-tags" class="flex flex-wrap gap-2 mt-8">
+                        <!-- Tags will be injected here -->
+                    </div>
+
+                    <!-- External Link Button (New) -->
+                    <div class="mt-8 flex justify-end">
+                        <a id="modal-external-link" href="#" target="_blank" rel="noopener noreferrer" class="hidden inline-flex items-center gap-2 border border-white/30 px-6 py-2 text-xs font-bold uppercase hover:bg-neon hover:border-neon hover:text-white transition-colors duration-300">
+                            <span>詳細を見る</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Lightbox -->
+    <div id="image-lightbox" class="fixed inset-0 z-[110] bg-black/95 backdrop-blur-sm hidden flex items-center justify-center p-2 md:p-4 cursor-pointer">
+        <button id="lightbox-close" class="absolute top-4 right-4 z-50 bg-black/50 border border-white/10 hover:bg-neon hover:border-neon hover:text-white text-gray-400 p-2 rounded-full transition-all duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+        <img id="lightbox-image" src="" alt="Enlarged Image">
+    </div>
+
+    <script>
+        // Image Lightbox Functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const lightbox = document.getElementById('image-lightbox');
+            const lightboxImage = document.getElementById('lightbox-image');
+            const lightboxClose = document.getElementById('lightbox-close');
+
+            // Add click handlers to all images with specific classes or in content sections
+            const clickableImages = document.querySelectorAll(
+                'img[src*="Pictures/"], img[src*="jpg"], img[src*="jpeg"], img[src*="png"], img[src*="JPG"]'
+            );
+
+            clickableImages.forEach(img => {
+                // Skip logo and certain UI images
+                if (img.src.includes('Logo') || img.closest('header') || img.closest('footer') || img.closest('.js-modal-trigger') || img.closest('nav')) {
+                    return;
+                }
+
+                img.classList.add('clickable-image');
+                
+                img.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    lightboxImage.src = img.src;
+                    lightboxImage.alt = img.alt;
+                    lightbox.classList.remove('hidden');
+                    // Prevent background scroll
+                    const scrollY = window.scrollY || document.documentElement.scrollTop;
+                    document.body.classList.add('modal-open');
+                    document.body.style.top = `-${scrollY}px`;
+                });
+            });
+
+            // Close lightbox
+            function closeLightbox() {
+                lightbox.classList.add('hidden');
+                // Restore scroll position
+                document.body.classList.remove('modal-open');
+                const scrollY = parseInt(document.body.style.top) * -1;
+                document.body.style.top = '';
+                window.scrollTo(0, scrollY);
+                lightboxImage.src = '';
+            }
+
+            lightboxClose.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeLightbox();
+            });
+
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) {
+                    closeLightbox();
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !lightbox.classList.contains('hidden')) {
+                    closeLightbox();
+                }
+            });
+        });
+    </script>
+
+    <script>
+
+
+        // Simple Intersection Observer for scroll animations
+        document.addEventListener('DOMContentLoaded', () => {
+            // ... existing observer code ...
+            // Hero Image Animation on Load
+            const heroImg = document.getElementById('hero-img');
+            setTimeout(() => {
+                heroImg.classList.add('visible');
+            }, 100);
+
+            // Concept Slideshow Logic
+            const slideshowContainer = document.getElementById('concept-slideshow');
+            if (slideshowContainer) {
+                const slides = slideshowContainer.querySelectorAll('.slide-image');
+                let currentSlide = 0;
+
+                setInterval(() => {
+                    const nextSlide = (currentSlide + 1) % slides.length;
+                    
+                    // Current slide: Fade out & Zoom in slightly
+                    slides[currentSlide].classList.remove('opacity-100', 'scale-100', 'z-10');
+                    slides[currentSlide].classList.add('opacity-0', 'scale-110', 'z-0');
+                    
+                    // Next slide: Fade in & Reset zoom
+                    slides[nextSlide].classList.remove('opacity-0', 'scale-110', 'z-0');
+                    slides[nextSlide].classList.add('opacity-100', 'scale-100', 'z-10');
+
+                    currentSlide = nextSlide;
+                }, 4000); 
+            }
+
+            // --- Carousel Navigation Logic ---
+            const carouselContainer = document.getElementById('carousel-container');
+            const carouselPrev = document.getElementById('carousel-prev');
+            const carouselNext = document.getElementById('carousel-next');
+            const carouselCards = document.querySelectorAll('.carousel-card');
+
+            if (carouselContainer && carouselPrev && carouselNext && carouselCards.length > 0) {
+                let currentIndex = 0;
+
+                function scrollToCard(index) {
+                    if (index < 0) index = 0;
+                    if (index >= carouselCards.length) index = carouselCards.length - 1;
+                    
+                    currentIndex = index;
+                    const card = carouselCards[index];
+                    const containerWidth = carouselContainer.offsetWidth;
+                    const cardWidth = card.offsetWidth;
+                    const scrollLeft = card.offsetLeft - (containerWidth - cardWidth) / 2;
+                    
+                    carouselContainer.scrollTo({
+                        left: scrollLeft,
+                        behavior: 'smooth'
+                    });
+                }
+
+                carouselPrev.addEventListener('click', () => {
+                    scrollToCard(currentIndex - 1);
+                });
+
+                carouselNext.addEventListener('click', () => {
+                    scrollToCard(currentIndex + 1);
+                });
+
+                // Update current index on scroll
+                carouselContainer.addEventListener('scroll', () => {
+                    const scrollLeft = carouselContainer.scrollLeft;
+                    const containerWidth = carouselContainer.offsetWidth;
+                    
+                    carouselCards.forEach((card, index) => {
+                        const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+                        const containerCenter = scrollLeft + containerWidth / 2;
+                        
+                        if (Math.abs(cardCenter - containerCenter) < containerWidth / 3) {
+                            currentIndex = index;
+                        }
+                    });
+                });
+            }
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        
+                        // Handle brush stroke animation specifically
+                        if (entry.target.classList.contains('trigger-draw')) {
+                            // Delay the start of the drawing animation significantly (800ms)
+                            setTimeout(() => {
+                                entry.target.classList.add('visible');
+                            }, 800);
+                        }
+                    }
+                });
+            }, observerOptions);
+
+            const animatedElements = document.querySelectorAll('.fade-up, .scale-reveal, .reveal-text, .trigger-on-scroll');
+            animatedElements.forEach(el => observer.observe(el));
+            
+            // Observe paths separately to manage the delay
+            const brushPaths = document.querySelectorAll('.trigger-draw');
+            brushPaths.forEach(el => observer.observe(el));
+
+
+            // --- Modal Logic ---
+            const modalOverlay = document.getElementById('modal-overlay');
+            const modalContent = document.getElementById('modal-content');
+            const modalClose = document.getElementById('modal-close');
+            const triggers = document.querySelectorAll('.js-modal-trigger');
+
+            // Elements to populate
+            const mTitle = document.getElementById('modal-title');
+            const mCategory = document.getElementById('modal-category');
+            const mImage = document.getElementById('modal-image');
+            const mIframe = document.getElementById('modal-iframe');
+            const mIframeContainer = document.getElementById('modal-iframe-container');
+            const mDescription = document.getElementById('modal-description');
+            const mDetail = document.getElementById('modal-detail');
+            const mTags = document.getElementById('modal-tags');
+            const mExternalLink = document.getElementById('modal-external-link');
+
+            // Markdown to HTML converter
+            function markdownToHtml(markdown) {
+                let html = markdown;
+                
+                // Split by lines first to handle complex formatting
+                const lines = html.split('\n');
+                let processed = [];
+                
+                lines.forEach(line => {
+                    if (line.trim().startsWith('- ')) {
+                        // Remove the dash and process the line content
+                        let content = line.replace(/^-\s*/, '');
+                        // Bold: **text** → <strong>text</strong>
+                        content = content.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+                        // Italic: *text* → <em>text</em>
+                        content = content.replace(/\*(.+?)\*/g, '<em>$1</em>');
+                        processed.push(`<li>${content}</li>`);
+                    } else if (line.trim()) {
+                        // Regular line without dash
+                        let content = line;
+                        content = content.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+                        content = content.replace(/\*(.+?)\*/g, '<em>$1</em>');
+                        processed.push(`<p>${content}</p>`);
+                    }
+                });
+                
+                // Wrap consecutive <li> elements with <ul>
+                let result = '';
+                let inList = false;
+                
+                processed.forEach(item => {
+                    if (item.startsWith('<li>')) {
+                        if (!inList) {
+                            result += '<ul>';
+                            inList = true;
+                        }
+                        result += item;
+                    } else {
+                        if (inList) {
+                            result += '</ul>';
+                            inList = false;
+                        }
+                        result += item;
+                    }
+                });
+                
+                if (inList) {
+                    result += '</ul>';
+                }
+                
+                return result;
+            }
+
+            function openModal(data) {
+                mTitle.textContent = data.title;
+                mCategory.textContent = data.category;
+                mDescription.textContent = data.description;
+                mDetail.innerHTML = markdownToHtml(data.detail || data.description); 
+                
+                // Image or Video logic
+                if (data.videoId) {
+                    mImage.classList.add('hidden');
+                    mIframeContainer.classList.remove('hidden');
+                    
+                    const origin = window.location.origin;
+                    mIframe.src = `https://www.youtube.com/embed/${data.videoId}?autoplay=1&mute=1&playsinline=1&rel=0&origin=${origin}`;
+                } else {
+                    mIframeContainer.classList.add('hidden');
+                    mIframe.src = '';
+                    mImage.classList.remove('hidden');
+                    mImage.src = data.image;
+                }
+                
+                // Tags
+                mTags.innerHTML = '';
+                if (data.tags) {
+                    const tagList = data.tags.split(',');
+                    tagList.forEach(tag => {
+                        const span = document.createElement('span');
+                        span.className = 'text-[10px] border border-white/10 px-3 py-1 text-gray-400 font-mono';
+                        span.textContent = tag.trim();
+                        mTags.appendChild(span);
+                    });
+                }
+
+                // External Link Button Logic
+                if (data.link) {
+                    mExternalLink.href = data.link;
+                    mExternalLink.classList.remove('hidden');
+                } else {
+                    mExternalLink.classList.add('hidden');
+                    mExternalLink.href = '#';
+                }
+
+                // Show modal
+                modalOverlay.classList.remove('hidden');
+                // Store scroll position and prevent background scroll
+                const scrollY = window.scrollY || document.documentElement.scrollTop;
+                document.documentElement.style.setProperty('--scroll-position', `${scrollY}px`);
+                document.body.classList.add('modal-open');
+                document.body.style.top = `-${scrollY}px`;
+                
+                setTimeout(() => {
+                    modalOverlay.classList.remove('opacity-0');
+                    modalContent.classList.remove('scale-95', 'opacity-0');
+                    modalContent.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            }
+
+            function closeModal() {
+                modalOverlay.classList.add('opacity-0');
+                modalContent.classList.remove('scale-100', 'opacity-100');
+                modalContent.classList.add('scale-95', 'opacity-0');
+                
+                mIframe.src = '';
+
+                setTimeout(() => {
+                    modalOverlay.classList.add('hidden');
+                    // Restore scroll position
+                    document.body.classList.remove('modal-open');
+                    const scrollY = parseInt(document.body.style.top) * -1;
+                    document.body.style.top = '';
+                    window.scrollTo(0, scrollY);
+                }, 300);
+            }
+
+            triggers.forEach(trigger => {
+                trigger.addEventListener('click', () => {
+                    const lang = currentLanguage;
+                    const data = {
+                        title: trigger.dataset['title' + (lang === 'en' ? 'En' : 'Ja')] || trigger.dataset.title,
+                        category: trigger.dataset.category,
+                        image: trigger.dataset.image,
+                        videoId: trigger.dataset.videoId,
+                        link: trigger.dataset.link,
+                        description: trigger.dataset['description' + (lang === 'en' ? 'En' : 'Ja')] || trigger.dataset.description,
+                        detail: trigger.dataset['detail' + (lang === 'en' ? 'En' : 'Ja')] || trigger.dataset.detail,
+                        tags: trigger.dataset['tags' + (lang === 'en' ? 'En' : 'Ja')] || trigger.dataset.tags
+                    };
+                    openModal(data);
+                });
+            });
+
+            modalClose.addEventListener('click', closeModal);
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) closeModal();
+            });
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !modalOverlay.classList.contains('hidden')) {
+                    closeModal();
+                }
+            });
+
+            // --- Language Switching Logic ---
+            function updatePageLanguage(lang) {
+                currentLanguage = lang;
+                localStorage.setItem('language', lang);
+
+                // Update all elements with data-i18n attributes
+                document.querySelectorAll('[data-i18n]').forEach(element => {
+                    const key = element.getAttribute('data-i18n');
+                    const text = translations[lang][key];
+                    
+                    if (text) {
+                        // For elements with child elements (like spans), update text content carefully
+                        if (element.children.length === 0 || element.textContent.trim() !== '') {
+                            element.textContent = text;
+                        }
+                    }
+                });
+
+                // Update card titles and descriptions dynamically
+                document.querySelectorAll('[data-card-title]').forEach(card => {
+                    const parentCard = card.closest('.js-modal-trigger');
+                    if (parentCard) {
+                        const key = lang === 'en' ? 'titleEn' : 'titleJa';
+                        const titleEn = parentCard.dataset.titleEn;
+                        const titleJa = parentCard.dataset.titleJa;
+                        card.textContent = lang === 'en' ? titleEn : titleJa;
+                    }
+                });
+
+                document.querySelectorAll('[data-card-description]').forEach(card => {
+                    const parentCard = card.closest('.js-modal-trigger');
+                    if (parentCard) {
+                        const descEn = parentCard.dataset.descriptionEn;
+                        const descJa = parentCard.dataset.descriptionJa;
+                        card.textContent = lang === 'en' ? descEn : descJa;
+                    }
+                });
+
+                // Update lang attribute on html element
+                document.documentElement.lang = lang === 'en' ? 'en' : 'ja';
+
+                // Update button label
+                const langToggle = document.getElementById('lang-toggle');
+                const langLabel = document.getElementById('lang-label');
+                if (langLabel) {
+                    langLabel.textContent = lang === 'en' ? 'JA' : 'EN';
+                }
+            }
+
+            // Language toggle button functionality
+            const langToggle = document.getElementById('lang-toggle');
+            if (langToggle) {
+                langToggle.addEventListener('click', () => {
+                    const newLang = currentLanguage === 'ja' ? 'en' : 'ja';
+                    updatePageLanguage(newLang);
+                });
+            }
+
+            // Initialize page with saved language
+            updatePageLanguage(currentLanguage);
+
+            // --- スクロール検出でロゴの表示を制御（縦画面専用） ---
+            function handleLogoVisibility() {
+                const isPortrait = window.matchMedia('(orientation: portrait)').matches;
+                
+                if (isPortrait) {
+                    const scrollThreshold = window.innerHeight * 0.7; // 画面高さの70%でロゴを表示
+                    
+                    if (window.scrollY > scrollThreshold) {
+                        document.body.classList.add('scrolled');
+                    } else {
+                        document.body.classList.remove('scrolled');
+                    }
+                }
+            }
+
+            // スクロールイベントリスナー
+            window.addEventListener('scroll', handleLogoVisibility);
+            // 画面向き変更時もチェック
+            window.addEventListener('resize', handleLogoVisibility);
+            // 初期チェック
+            handleLogoVisibility();
+        });
+    </script>
+</body>
+</html>
