@@ -440,6 +440,17 @@
                 background-image: url('Pictures/TitleMobile.PNG');
             }
         }
+
+        /* Navigation Button Styles */
+        .navbar-nav-button {
+            background: none;
+            border: none;
+            padding: 0;
+            font-family: inherit;
+            font-size: inherit;
+            cursor: pointer;
+            color: inherit;
+        }
     </style>
 </head>
 <body class="antialiased overflow-x-hidden selection:bg-neon selection:text-white">
@@ -464,26 +475,26 @@
     <!-- Fixed Header -->
     <header class="fixed top-0 left-0 w-full z-50 mix-blend-difference px-6 py-6 flex justify-between items-center pointer-events-none">
         <div class="pointer-events-auto">
-            <a href="#">
+            <button class="navbar-nav-button" data-scroll-to="#">
                 <img src="Pictures/Logo.PNG" 
                      alt="nIpxel Logo" 
                      class="h-40 w-auto block">
-            </a>
+            </button>
         </div>
         <nav class="pointer-events-auto hidden md:flex space-x-12 text-xs font-bold uppercase tracking-widest text-white">
-            <a href="#concept" class="hover:text-neon transition-colors duration-300" data-i18n="concept">Concept</a>
-            <a href="#interface" class="hover:text-neon transition-colors duration-300" data-i18n="interface">Interface</a>
-            <a href="#ergonomics" class="hover:text-neon transition-colors duration-300" data-i18n="design">Design</a>
-            <a href="#cases" class="hover:text-neon transition-colors duration-300" data-i18n="cases">Cases</a>
-            <a href="#specs" class="hover:text-neon transition-colors duration-300" data-i18n="specs">Specs</a>
+            <button class="navbar-nav-button hover:text-neon transition-colors duration-300" data-scroll-to="#concept" data-i18n="concept">Concept</button>
+            <button class="navbar-nav-button hover:text-neon transition-colors duration-300" data-scroll-to="#interface" data-i18n="interface">Interface</button>
+            <button class="navbar-nav-button hover:text-neon transition-colors duration-300" data-scroll-to="#ergonomics" data-i18n="design">Design</button>
+            <button class="navbar-nav-button hover:text-neon transition-colors duration-300" data-scroll-to="#cases" data-i18n="cases">Cases</button>
+            <button class="navbar-nav-button hover:text-neon transition-colors duration-300" data-scroll-to="#specs" data-i18n="specs">Specs</button>
         </nav>
         <div class="pointer-events-auto flex items-center gap-4">
             <button id="lang-toggle" class="inline-block border border-white/30 text-white px-4 py-2 rounded-full text-xs font-bold uppercase hover:bg-white/10 hover:border-white transition-colors duration-300">
                 <span id="lang-label">EN</span>
             </button>
-            <a href="#creators" class="inline-block border border-white/30 text-white px-6 py-2 rounded-full text-xs font-bold uppercase hover:bg-neon hover:border-neon hover:text-white transition-colors duration-300">
+            <button class="navbar-nav-button inline-block border border-white/30 text-white px-6 py-2 rounded-full text-xs font-bold uppercase hover:bg-neon hover:border-neon hover:text-white transition-colors duration-300" data-scroll-to="#creators">
                 Contact
-            </a>
+            </button>
         </div>
     </header>
 
@@ -714,7 +725,7 @@
             </button>
 
             <!-- Horizontal Scroll Container -->
-            <div id="carousel-container" class="flex overflow-x-auto space-x-6 pb-12 no-scrollbar snap-x snap-mandatory fade-up trigger-on-scroll scroll-smooth" style="scroll-padding-left: 24px; padding-left: calc(1.5rem + ((100% - 80rem) / 2)); padding-right: 1.5rem;">
+            <div id="carousel-container" class="flex overflow-x-auto space-x-6 pb-12 no-scrollbar snap-x snap-mandatory fade-up trigger-on-scroll" style="scroll-padding-left: 24px; padding-left: calc(1.5rem + ((100% - 80rem) / 2)); padding-right: 1.5rem;">
                 
                 <!-- Card 1: 詠印魔道 (Updated) -->
                 <!-- 
@@ -1478,6 +1489,22 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
             // 初期チェック
             handleLogoVisibility();
             checkLogoSpace();
+
+            // --- Navigation Button Handler ---
+            const navButtons = document.querySelectorAll('.navbar-nav-button');
+            navButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = button.dataset.scrollTo;
+                    if (targetId === '#') {
+                        return; // Logo button - no scroll
+                    }
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
         });
     </script>
 </body>
