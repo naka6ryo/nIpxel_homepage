@@ -230,45 +230,57 @@
             background-position: center top;
             background-repeat: no-repeat;
             opacity: 0;
+            --hero-parallax: 0px;
+            transform: translateY(24px) scale(1.02);
+            filter: blur(10px) saturate(0.92);
         }
 
         /* Background layer - visible immediately */
         .title-layer-back {
             opacity: 1;
             animation: none;
+            filter: none;
+            transform: translateY(var(--hero-parallax, 0px));
         }
 
         /* Logo layer - fade in after 0.5s */
         .title-layer-logo {
-            animation: fadeInLayer 1.2s ease-out 0.5s forwards;
+            animation: heroReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards;
         }
 
         /* Object 1 layer - fade in after 1.0s */
         .title-layer-ob01 {
-            animation: fadeInLayer 1.2s ease-out 1.0s forwards;
+            animation: heroReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.9s forwards;
         }
 
         /* Object 2 layer - fade in after 1.5s */
         .title-layer-ob02 {
-            animation: fadeInLayer 1.2s ease-out 1.5s forwards;
+            animation: heroReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) 1.4s forwards;
         }
 
         /* Copy 1 layer - fade in after 2.0s */
         .title-layer-copy01 {
-            animation: fadeInLayer 1.2s ease-out 2.0s forwards;
+            animation: heroReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) 1.9s forwards;
         }
 
         /* Copy 2 layer - fade in after 2.5s */
         .title-layer-copy02 {
-            animation: fadeInLayer 1.2s ease-out 2.5s forwards;
+            animation: heroReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) 2.4s forwards;
         }
 
-        @keyframes fadeInLayer {
-            from {
+        @keyframes heroReveal {
+            0% {
                 opacity: 0;
+                transform: translateY(28px) scale(1.03);
+                filter: blur(12px) saturate(0.9);
             }
-            to {
+            60% {
                 opacity: 1;
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(var(--hero-parallax, 0px)) scale(1);
+                filter: blur(0) saturate(1);
             }
         }
 
@@ -1176,9 +1188,32 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
             // ... existing observer code ...
             // Hero Image Animation on Load
             const heroImg = document.getElementById('hero-img');
-            setTimeout(() => {
-                heroImg.classList.add('visible');
-            }, 100);
+            if (heroImg) {
+                setTimeout(() => heroImg.classList.add('visible'), 100);
+            }
+
+            // Hero parallax for stacked title layers
+            const heroLayerConfigs = [
+                { selector: '.title-layer-back', depth: 0.04 },
+                { selector: '.title-layer-logo', depth: 0.08 },
+                { selector: '.title-layer-ob01', depth: 0.12 },
+                { selector: '.title-layer-ob02', depth: 0.1 },
+                { selector: '.title-layer-copy01', depth: 0.14 },
+                { selector: '.title-layer-copy02', depth: 0.18 },
+            ].map(cfg => ({ ...cfg, el: document.querySelector(cfg.selector) }));
+
+            function updateHeroParallax() {
+                const progress = Math.min(window.scrollY / window.innerHeight, 1);
+                heroLayerConfigs.forEach(({ el, depth }) => {
+                    if (!el) return;
+                    const translate = -progress * depth * 70;
+                    el.style.setProperty('--hero-parallax', `${translate}px`);
+                });
+            }
+
+            updateHeroParallax();
+            window.addEventListener('scroll', updateHeroParallax, { passive: true });
+            window.addEventListener('resize', updateHeroParallax);
 
             // Concept Slideshow Logic
             const slideshowContainer = document.getElementById('concept-slideshow');
