@@ -1046,9 +1046,7 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 lightbox.classList.add('hidden');
                 // Restore scroll position
                 document.body.classList.remove('modal-open');
-                const scrollY = parseInt(document.body.style.top) * -1;
                 document.body.style.top = '';
-                window.scrollTo(0, scrollY);
                 lightboxImage.src = '';
             }
 
@@ -1320,9 +1318,7 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                     modalOverlay.classList.add('hidden');
                     // Restore scroll position
                     document.body.classList.remove('modal-open');
-                    const scrollY = parseInt(document.body.style.top) * -1;
                     document.body.style.top = '';
-                    window.scrollTo(0, scrollY);
                 }, 300);
             }
 
