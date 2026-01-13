@@ -247,6 +247,13 @@
                 background-position: center top;
             }
         }
+        
+        /* 横画面で横幅が狭い場合、ロゴを非表示 */
+        @media (orientation: landscape) and (max-width: 900px) {
+            header img {
+                display: none;
+            }
+        }
 
         /* Carousel Mobile Styles */
         @media (max-width: 768px) {
