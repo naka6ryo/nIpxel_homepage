@@ -248,11 +248,9 @@
             }
         }
         
-        /* 横画面で横幅が狭い場合、ロゴを非表示 */
-        @media (orientation: landscape) and (max-width: 900px) {
-            header img {
-                display: none;
-            }
+        /* 横画面でロゴのスペースが不足する場合、JavaScriptで非表示にする */
+        header img.hidden-by-space {
+            display: none;
         }
 
         /* Carousel Mobile Styles */
@@ -1431,12 +1429,56 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 }
             }
 
+            // --- 横画面時のロゴスペース検知 ---
+            function checkLogoSpace() {
+                const header = document.querySelector('header');
+                const logo = header.querySelector('img');
+                const nav = header.querySelector('nav');
+                const rightButtons = header.querySelector('.flex.items-center.gap-4');
+                
+                const isLandscape = window.matchMedia('(orientation: landscape)').matches;
+                
+                if (!isLandscape) {
+                    // 縦画面時は既存の制御に任せる
+                    logo.classList.remove('hidden-by-space');
+                    return;
+                }
+                
+                // ヘッダーの全体幅とpaddingを取得
+                const headerWidth = header.offsetWidth;
+                const headerStyle = window.getComputedStyle(header);
+                const headerPadding = parseFloat(headerStyle.paddingLeft) + parseFloat(headerStyle.paddingRight);
+                const availableWidth = headerWidth - headerPadding;
+                
+                // 各要素の幅を計算
+                const logoWidth = logo.offsetWidth;
+                const navWidth = nav ? nav.offsetWidth : 0;
+                const buttonsWidth = rightButtons ? rightButtons.offsetWidth : 0;
+                
+                // 必要な最小間隔（余白）
+                const minGap = 48; // 要素間の最小余白（12px × 2 + α）
+                
+                // 全要素を並べるのに必要な幅
+                const requiredWidth = logoWidth + navWidth + buttonsWidth + (minGap * 2);
+                
+                // スペースが不足していればロゴを非表示
+                if (requiredWidth > availableWidth) {
+                    logo.classList.add('hidden-by-space');
+                } else {
+                    logo.classList.remove('hidden-by-space');
+                }
+            }
+
             // スクロールイベントリスナー
             window.addEventListener('scroll', handleLogoVisibility);
-            // 画面向き変更時もチェック
-            window.addEventListener('resize', handleLogoVisibility);
+            // 画面向き変更・リサイズ時もチェック
+            window.addEventListener('resize', () => {
+                handleLogoVisibility();
+                checkLogoSpace();
+            });
             // 初期チェック
             handleLogoVisibility();
+            checkLogoSpace();
         });
     </script>
 </body>
