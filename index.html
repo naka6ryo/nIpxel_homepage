@@ -245,27 +245,30 @@
 
         /* Logo layer - fade in after 0.5s */
         .title-layer-logo {
-            animation: heroReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards;
+            opacity: 1;
+            animation: none;
+            filter: none;
+            transform: translateY(var(--hero-parallax, 0px));
         }
 
         /* Object 1 layer - fade in after 1.0s */
         .title-layer-ob01 {
-            animation: heroReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.9s forwards;
+            animation: heroReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.7s forwards;
         }
 
         /* Object 2 layer - fade in after 1.5s */
         .title-layer-ob02 {
-            animation: heroReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) 1.4s forwards;
+            animation: heroReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.95s forwards;
         }
 
         /* Copy 1 layer - fade in after 2.0s */
         .title-layer-copy01 {
-            animation: heroReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) 1.9s forwards;
+            animation: heroReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) 1.5s forwards;
         }
 
         /* Copy 2 layer - fade in after 2.5s */
         .title-layer-copy02 {
-            animation: heroReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) 2.4s forwards;
+            animation: heroReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) 1.75s forwards;
         }
 
         @keyframes heroReveal {
