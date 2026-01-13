@@ -1053,15 +1053,22 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
 
             // Close lightbox
             function closeLightbox() {
-                lightbox.classList.add('hidden');
-                // Restore scroll position BEFORE removing modal-open class
+                // Restore scroll position FIRST, while lightbox is still visible
                 const scrollY = Math.abs(parseInt(document.body.style.top)) || 0;
+                
+                // Remove fixed positioning and restore scroll synchronously
                 document.body.style.top = '';
                 document.body.classList.remove('modal-open');
-                if (scrollY > 0) {
-                    window.scrollTo(0, scrollY);
-                }
-                lightboxImage.src = '';
+                
+                // Restore scroll in the same frame
+                document.documentElement.scrollTop = scrollY;
+                document.body.scrollTop = scrollY;
+                
+                // Then hide lightbox after scroll is restored
+                requestAnimationFrame(() => {
+                    lightbox.classList.add('hidden');
+                    lightboxImage.src = '';
+                });
             }
 
             lightboxClose.addEventListener('click', (e) => {
@@ -1329,14 +1336,21 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 mIframe.src = '';
 
                 setTimeout(() => {
-                    modalOverlay.classList.add('hidden');
-                    // Restore scroll position BEFORE removing modal-open class
+                    // Restore scroll position FIRST, while modal is still visible
                     const scrollY = Math.abs(parseInt(document.body.style.top)) || 0;
+                    
+                    // Remove fixed positioning and restore scroll synchronously
                     document.body.style.top = '';
                     document.body.classList.remove('modal-open');
-                    if (scrollY > 0) {
-                        window.scrollTo(0, scrollY);
-                    }
+                    
+                    // Restore scroll in the same frame
+                    document.documentElement.scrollTop = scrollY;
+                    document.body.scrollTop = scrollY;
+                    
+                    // Then hide modal after scroll is restored
+                    requestAnimationFrame(() => {
+                        modalOverlay.classList.add('hidden');
+                    });
                 }, 300);
             }
 
