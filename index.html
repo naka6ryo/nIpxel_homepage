@@ -1700,7 +1700,7 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 renderer.setPixelRatio(window.devicePixelRatio);
                 renderer.outputEncoding = THREE.sRGBEncoding;
                 renderer.toneMapping = THREE.LinearToneMapping;  // LinearToneMapping as default (like gltf-viewer)
-                renderer.toneMappingExposure = 1.0;
+                renderer.toneMappingExposure = 1.5;
                 container.appendChild(renderer.domElement);
 
                 // Environment Setup with RoomEnvironment
@@ -1714,11 +1714,11 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 scene.background = new THREE.Color(0x191919);
 
                 // Lighting
-                const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
                 ambientLight.name = 'ambient_light';
                 camera.add(ambientLight);  // Add to camera, not scene
 
-                const dirLight = new THREE.DirectionalLight(0xffffff, 0.8 * Math.PI);
+                const dirLight = new THREE.DirectionalLight(0xffffff, 1.2 * Math.PI);
                 dirLight.position.set(0.5, 0, 0.866);  // ~60 degrees
                 dirLight.name = 'main_light';
                 camera.add(dirLight);  // Add to camera, not scene
