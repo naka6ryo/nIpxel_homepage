@@ -1753,17 +1753,22 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                                 
                                 materials.forEach(mat => {
                                     if (mat) {
-                                        // Check if material has transparency
-                                        if (mat.transparent || mat.opacity < 1.0 || mat.alphaTest > 0) {
-                                            mat.transparent = true;
+                                        // Always enable transparency to respect GLB alpha channel
+                                        const wasTransparent = mat.transparent;
+                                        const originalOpacity = mat.opacity;
+                                        
+                                        mat.transparent = true;
+                                        mat.side = THREE.DoubleSide;
+                                        
+                                        // Only disable depthWrite if opacity is less than 1 or was already transparent
+                                        if (wasTransparent || originalOpacity < 0.99 || mat.alphaTest > 0) {
                                             mat.depthWrite = false;
-                                            mat.side = THREE.DoubleSide;
                                             hasTransparency = true;
                                         } else {
-                                            // Keep opaque materials as is
-                                            mat.transparent = false;
+                                            // For fully opaque materials, keep depthWrite enabled
                                             mat.depthWrite = true;
                                         }
+                                        
                                         mat.needsUpdate = true;
                                     }
                                 });
@@ -1771,15 +1776,13 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                                 // Sort meshes by transparency
                                 if (hasTransparency) {
                                     transparentMeshes.push(node);
+                                    node.renderOrder = 100;
                                 } else {
                                     opaqueMeshes.push(node);
+                                    node.renderOrder = 0;
                                 }
                             }
                         });
-                        
-                        // Set render order: opaque first, then transparent
-                        opaqueMeshes.forEach(mesh => mesh.renderOrder = 0);
-                        transparentMeshes.forEach((mesh, index) => mesh.renderOrder = 1 + index);
                         
                         // Center the model
                         const box = new THREE.Box3().setFromObject(loadedModel);
