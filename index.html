@@ -8,7 +8,7 @@
     <!-- OGP Tags for Social Media -->
     <meta property="og:title" content="nIpxel | The Haptic Glove Controller" />
     <meta property="og:description" content="触覚グローブコントローラー - 次世代のVR/AR体験を実現" />
-    <meta property="og:image" content="https://nipxel.netlify.app/Pictures/TitlePC.PNG" />
+    <meta property="og:image" content="Pictures/TitlePC.PNG" />
     <meta property="og:url" content="https://nipxel.netlify.app/" />
     <meta property="og:type" content="website" />
     <meta name="theme-color" content="#ff3b1f" />
@@ -27,6 +27,10 @@
     
     <!-- Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Three.js (Added for 3D Viewer) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
     <script>
         tailwind.config = {
@@ -127,6 +131,9 @@
                 technicalDetail: "Technical Detail",
                 detailLink: "View Details",
                 modalClose: "Close",
+                viewerTitle: "3D Viewer",
+                // Updated translation
+                dragToRotate: "Drag Object to Rotate",
             },
             ja: {
                 concept: "Concept",
@@ -193,6 +200,9 @@
                 technicalDetail: "Technical Detail",
                 detailLink: "詳細を見る",
                 modalClose: "Close",
+                viewerTitle: "3D Viewer",
+                // Updated translation
+                dragToRotate: "オブジェクトをドラッグして回転",
             }
         };
 
@@ -548,6 +558,14 @@
             cursor: pointer;
             color: inherit;
         }
+
+        /* 3D Canvas Container */
+        #canvas-3d-container {
+            cursor: grab;
+        }
+        #canvas-3d-container:active {
+            cursor: grabbing;
+        }
     </style>
 </head>
 <body class="antialiased overflow-x-hidden selection:bg-neon selection:text-white">
@@ -796,6 +814,32 @@
         </div>
     </section>
 
+    <!-- NEW 3D Viewer Section -->
+    <section id="interactive-3d" class="relative py-24 bg-[#080808]/95 backdrop-blur-sm border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-6 md:px-12">
+            <div class="text-center mb-10">
+                <span class="text-xs font-mono text-gray-500 mb-2 block tracking-widest fade-up trigger-on-scroll" data-i18n="viewerTitle">3D Viewer</span>
+                <div class="relative inline-block">
+                    <h2 class="text-3xl font-bold uppercase tracking-tight fade-up trigger-on-scroll relative z-10 text-white">Interactive Model</h2>
+                </div>
+                <p class="text-xs text-neon font-mono mt-4 uppercase tracking-widest fade-up trigger-on-scroll animate-pulse" data-i18n="dragToRotate">
+                    Drag Object to Rotate
+                </p>
+            </div>
+            
+            <div class="relative w-full h-[60vh] md:h-[70vh] rounded-sm overflow-hidden border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.5)] fade-up trigger-on-scroll bg-[#050505]" id="canvas-3d-container">
+                <!-- Three.js Canvas will be injected here -->
+                <div class="absolute inset-0 pointer-events-none flex items-center justify-center opacity-30">
+                    <div class="w-64 h-64 border border-white/5 rounded-full animate-ping"></div>
+                </div>
+                <div class="absolute bottom-4 left-6 text-[10px] text-gray-600 font-mono pointer-events-none">
+                    RENDER: WEBGL<br>
+                    MODEL: PROTO-TYPE 01
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Parallax / Image Break -->
     <section id="parallax-section" class="relative h-[60vh] overflow-hidden flex items-center justify-center">
         <div class="parallax-overlay absolute inset-0"></div>
@@ -849,10 +893,10 @@
                  data-tags-ja="Unity,Projection,テックシーカー2025,いずみ万博2025"
                  data-tags-en="Unity,Projection,TechSeeker2025,Izumi Expo 2025"
                  data-description-ja="声の呪文と手のジェスチャーで魔法を発動する、リアル×デジタルの対戦アクション。中二心、解放。"
-                 data-description-en="A new style competitive action game where you chant with your voice and cast "magic" with a swing of your hand."
+                 data-description-en="A new style competitive action game where you chant with your voice and cast &quot;magic&quot; with a swing of your hand."
                  data-detail-ja="- **詠唱 × ジェスチャー**：ジェスチャーで魔法を発動，詠唱で攻撃/防御力が決まる
 - **アナグリフ表示**：赤・緑のフィルターで、同じ画面でも相手とは異なる世界が見える
-- **ハプティクス**：被弾時はコントローラが小刻みに震え、ダメージを"触覚"で実感"
+- **ハプティクス**：被弾時はコントローラが小刻みに震え、ダメージを&quot;触覚&quot;で実感"
                  data-detail-en="Voice x Gesture: Use hand gestures to activate magic, and the magic flies in the direction of the gesture during attacks. Voice casting determines attack/defense power
 Anaglyph Display: With red and green filters, the same screen shows different worlds to opponents
 Haptics: When hit, the controller vibrates finely, letting you feel the damage">
@@ -1627,6 +1671,199 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                     }
                 });
             });
+
+
+            // --- THREE.JS 3D VIEWER IMPLEMENTATION ---
+            (function init3DViewer() {
+                const container = document.getElementById('canvas-3d-container');
+                if (!container || !window.THREE) return;
+
+                // Scene Setup
+                const scene = new THREE.Scene();
+                // Match background color with container
+                scene.background = new THREE.Color(0x050505); 
+                // Add some fog for depth
+                scene.fog = new THREE.Fog(0x050505, 5, 15);
+
+                // Camera
+                const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+                camera.position.set(4, 3, 5);
+                camera.lookAt(0, 0, 0);
+
+                // Renderer
+                const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                renderer.setSize(container.clientWidth, container.clientHeight);
+                renderer.setPixelRatio(window.devicePixelRatio);
+                container.appendChild(renderer.domElement);
+
+                // Lighting
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+                scene.add(ambientLight);
+
+                const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                dirLight.position.set(5, 5, 5);
+                scene.add(dirLight);
+
+                const neonLight = new THREE.PointLight(0xff3b1f, 1.5, 10);
+                neonLight.position.set(-2, 1, 2);
+                scene.add(neonLight);
+                
+                const rimLight = new THREE.SpotLight(0x0088ff, 1);
+                rimLight.position.set(0, 5, -5);
+                rimLight.lookAt(0,0,0);
+                scene.add(rimLight);
+
+
+                // --- Load GLB Model ---
+                const modelGroup = new THREE.Group();
+                scene.add(modelGroup);
+
+                const loader = new THREE.GLTFLoader();
+                let loadedModel = null;
+
+                loader.load(
+                    'nIpxel.glb',
+                    function(gltf) {
+                        loadedModel = gltf.scene;
+                        
+                        // Center the model
+                        const box = new THREE.Box3().setFromObject(loadedModel);
+                        const center = box.getCenter(new THREE.Vector3());
+                        loadedModel.position.x = -center.x;
+                        loadedModel.position.y = -center.y;
+                        loadedModel.position.z = -center.z;
+                        
+                        modelGroup.add(loadedModel);
+                        
+                        // Tilt the model slightly for better initial view
+                        modelGroup.rotation.x = -Math.PI / 6;
+                        modelGroup.rotation.y = Math.PI / 4;
+                    },
+                    function(xhr) {
+                        console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+                    },
+                    function(error) {
+                        console.error('Error loading GLB model:', error);
+                    }
+                );
+
+                // --- Interaction Logic (Raycasting) ---
+                let isDragging = false;
+                let previousMousePosition = { x: 0, y: 0 };
+                
+                const raycaster = new THREE.Raycaster();
+                const mouse = new THREE.Vector2();
+
+                // Helper to check intersection with model
+                function checkIntersection(clientX, clientY) {
+                    const rect = container.getBoundingClientRect();
+                    // Convert mouse position to Normalized Device Coordinates (-1 to +1)
+                    mouse.x = ((clientX - rect.left) / container.clientWidth) * 2 - 1;
+                    mouse.y = -((clientY - rect.top) / container.clientHeight) * 2 + 1;
+
+                    raycaster.setFromCamera(mouse, camera);
+                    // Check intersection with modelGroup children
+                    const intersects = raycaster.intersectObjects(modelGroup.children, true);
+                    return intersects.length > 0;
+                }
+                
+                // Mouse Events
+                container.addEventListener('mousedown', (e) => {
+                    if (checkIntersection(e.clientX, e.clientY)) {
+                        isDragging = true;
+                        previousMousePosition = { x: e.offsetX, y: e.offsetY };
+                        container.style.cursor = 'grabbing';
+                    }
+                });
+
+                container.addEventListener('mousemove', (e) => {
+                    if (!isDragging) {
+                        // Change cursor on hover if over object
+                        container.style.cursor = checkIntersection(e.clientX, e.clientY) ? 'grab' : 'default';
+                        return;
+                    }
+                    
+                    const deltaMove = {
+                        x: e.offsetX - previousMousePosition.x,
+                        y: e.offsetY - previousMousePosition.y
+                    };
+
+                    const rotationSpeed = 0.005;
+                    modelGroup.rotation.y += deltaMove.x * rotationSpeed;
+                    modelGroup.rotation.x += deltaMove.y * rotationSpeed;
+
+                    previousMousePosition = { x: e.offsetX, y: e.offsetY };
+                });
+
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                    container.style.cursor = 'default';
+                });
+                
+                // Touch Events for Mobile
+                container.addEventListener('touchstart', (e) => {
+                    const touch = e.touches[0];
+                    if (checkIntersection(touch.clientX, touch.clientY)) {
+                        isDragging = true;
+                        previousMousePosition = { x: touch.clientX, y: touch.clientY };
+                        // Prevent scroll if starting drag on object
+                        // Note: preventing default on touchstart might be too aggressive, 
+                        // usually better to do it on touchmove if direction matches
+                    }
+                }, { passive: false });
+
+                container.addEventListener('touchmove', (e) => {
+                    if (!isDragging) return;
+                    
+                    // Prevent page scrolling ONLY when dragging the object
+                    e.preventDefault(); 
+                    
+                    const currentX = e.touches[0].clientX;
+                    const currentY = e.touches[0].clientY;
+                    
+                    const deltaMove = {
+                        x: currentX - previousMousePosition.x,
+                        y: currentY - previousMousePosition.y
+                    };
+
+                    const rotationSpeed = 0.005;
+                    modelGroup.rotation.y += deltaMove.x * rotationSpeed;
+                    modelGroup.rotation.x += deltaMove.y * rotationSpeed;
+
+                    previousMousePosition = { x: currentX, y: currentY };
+                }, { passive: false });
+
+                container.addEventListener('touchend', () => {
+                    isDragging = false;
+                });
+                
+                // Removed Zoom on Scroll (Wheel) per request
+
+
+                // Animation Loop
+                function animate() {
+                    requestAnimationFrame(animate);
+                    
+                    // Idle animation (slow rotation)
+                    if (!isDragging) {
+                        modelGroup.rotation.y += 0.002;
+                    }
+
+                    renderer.render(scene, camera);
+                }
+
+                animate();
+
+                // Resize Handler
+                window.addEventListener('resize', () => {
+                    const width = container.clientWidth;
+                    const height = container.clientHeight;
+                    
+                    renderer.setSize(width, height);
+                    camera.aspect = width / height;
+                    camera.updateProjectionMatrix();
+                });
+            })();
         });
     </script>
 </body>
