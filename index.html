@@ -1742,6 +1742,8 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                     'nIpxel.glb',
                     function(gltf) {
                         console.log('✓ GLB loaded successfully');
+                        console.log('File URL: nIpxel.glb (relative path)');
+                        console.log('Resolved URL would be:', window.location.origin + window.location.pathname.replace('index.html', '') + 'nIpxel.glb');
                         console.log('Scene:', gltf.scene);
                         console.log('Animations:', gltf.animations.length);
                         loadedModel = gltf.scene;
