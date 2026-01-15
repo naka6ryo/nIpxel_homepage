@@ -1746,8 +1746,30 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                         // Scale up the model 50x
                         loadedModel.scale.set(50, 50, 50);
 
-                        // Use GLB-authored material settings as-is (no overrides)
-                        // Transparency, depth settings, and sidedness are determined by the original file.
+                        // Respect GLB materials, but ensure transparent surfaces don't write depth
+                        loadedModel.traverse(function(node) {
+                            if (!node.isMesh) return;
+
+                            const materials = Array.isArray(node.material) ? node.material : [node.material];
+
+                            materials.forEach(mat => {
+                                if (!mat) return;
+
+                                const isTransparent = (mat.transparent === true) || mat.opacity < 0.999 || mat.alphaTest > 0;
+
+                                // Ensure transparent surfaces blend correctly
+                                if (isTransparent) {
+                                    mat.transparent = true;
+                                    mat.depthWrite = false;
+                                    mat.blending = THREE.NormalBlending;
+                                } else {
+                                    mat.depthWrite = true;
+                                }
+
+                                mat.depthTest = true;
+                                mat.needsUpdate = true;
+                            });
+                        });
                         
                         // Center the model
                         const box = new THREE.Box3().setFromObject(loadedModel);
