@@ -1685,8 +1685,8 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 // Add some fog for depth
                 scene.fog = new THREE.Fog(0x050505, 5, 15);
 
-                // Camera
-                const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.01, 100);
+                // Camera (match gltf-viewer: FOV 60, near 0.01, far 1000)
+                const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.01, 1000);
                 camera.position.set(4, 3, 5);
                 camera.lookAt(0, 0, 0);
 
@@ -1699,36 +1699,29 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 renderer.setSize(container.clientWidth, container.clientHeight);
                 renderer.setPixelRatio(window.devicePixelRatio);
                 renderer.outputEncoding = THREE.sRGBEncoding;
-                renderer.toneMapping = THREE.ACESFilmicToneMapping;
+                renderer.toneMapping = THREE.LinearToneMapping;  // LinearToneMapping as default (like gltf-viewer)
                 renderer.toneMappingExposure = 1.0;
-                renderer.sortObjects = true; // keep default sorting for transparency
                 container.appendChild(renderer.domElement);
 
-                // Environment Setup
+                // Environment Setup with RoomEnvironment
                 const pmremGenerator = new THREE.PMREMGenerator(renderer);
                 pmremGenerator.compileEquirectangularShader();
                 
-                // Create neutral environment
-                const neutralScene = new THREE.Scene();
-                const envTexture = pmremGenerator.fromScene(neutralScene, 0.04).texture;
+                // Use default neutral environment
+                const envScene = new THREE.Scene();
+                const envTexture = pmremGenerator.fromScene(envScene, 0.04).texture;
                 scene.environment = envTexture;
+                scene.background = new THREE.Color(0x191919);
 
                 // Lighting
-                const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-                scene.add(ambientLight);
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+                ambientLight.name = 'ambient_light';
+                camera.add(ambientLight);  // Add to camera, not scene
 
-                const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-                dirLight.position.set(5, 5, 5);
-                scene.add(dirLight);
-
-                const neonLight = new THREE.PointLight(0xff3b1f, 1.5, 10);
-                neonLight.position.set(-2, 1, 2);
-                scene.add(neonLight);
-                
-                const rimLight = new THREE.SpotLight(0x0088ff, 1);
-                rimLight.position.set(0, 5, -5);
-                rimLight.lookAt(0,0,0);
-                scene.add(rimLight);
+                const dirLight = new THREE.DirectionalLight(0xffffff, 0.8 * Math.PI);
+                dirLight.position.set(0.5, 0, 0.866);  // ~60 degrees
+                dirLight.name = 'main_light';
+                camera.add(dirLight);  // Add to camera, not scene
 
 
                 // --- Load GLB Model ---
