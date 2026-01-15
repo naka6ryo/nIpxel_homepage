@@ -1703,25 +1703,26 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 renderer.toneMappingExposure = 1.5;
                 container.appendChild(renderer.domElement);
 
-                // Environment Setup with RoomEnvironment
+                // Environment Setup (simplified)
                 const pmremGenerator = new THREE.PMREMGenerator(renderer);
                 pmremGenerator.compileEquirectangularShader();
-                
-                // Use default neutral environment
-                const envScene = new THREE.Scene();
-                const envTexture = pmremGenerator.fromScene(envScene, 0.04).texture;
-                scene.environment = envTexture;
-                scene.background = new THREE.Color(0x191919);
 
                 // Lighting
                 const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-                ambientLight.name = 'ambient_light';
-                camera.add(ambientLight);  // Add to camera, not scene
+                scene.add(ambientLight);
 
-                const dirLight = new THREE.DirectionalLight(0xffffff, 1.2 * Math.PI);
-                dirLight.position.set(0.5, 0, 0.866);  // ~60 degrees
-                dirLight.name = 'main_light';
-                camera.add(dirLight);  // Add to camera, not scene
+                const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+                dirLight.position.set(5, 5, 5);
+                scene.add(dirLight);
+
+                const neonLight = new THREE.PointLight(0xff3b1f, 2.0, 10);
+                neonLight.position.set(-2, 1, 2);
+                scene.add(neonLight);
+                
+                const rimLight = new THREE.SpotLight(0x0088ff, 1.5);
+                rimLight.position.set(0, 5, -5);
+                rimLight.lookAt(0, 0, 0);
+                scene.add(rimLight);
 
 
                 // --- Load GLB Model ---
