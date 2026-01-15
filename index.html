@@ -1686,7 +1686,7 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 scene.fog = new THREE.Fog(0x050505, 5, 15);
 
                 // Camera
-                const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+                const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.01, 1000);
                 camera.position.set(4, 3, 5);
                 camera.lookAt(0, 0, 0);
 
@@ -1701,7 +1701,8 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 renderer.outputEncoding = THREE.sRGBEncoding;
                 renderer.toneMapping = THREE.ACESFilmicToneMapping;
                 renderer.toneMappingExposure = 1.0;
-                renderer.sortObjects = true; // keep default sorting for transparency
+                renderer.sortObjects = true;
+                renderer.gammaOutput = false;
                 container.appendChild(renderer.domElement);
 
                 // Environment Setup
@@ -1734,8 +1735,6 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 // --- Load GLB Model ---
                 const modelGroup = new THREE.Group();
                 scene.add(modelGroup);
-                const transparentMeshes = [];
-                const _tempVec = new THREE.Vector3();
 
                 const loader = new THREE.GLTFLoader();
                 let loadedModel = null;
@@ -1748,26 +1747,57 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                         // Scale up the model 50x
                         loadedModel.scale.set(50, 50, 50);
 
-                        // Simple approach: treat all meshes as transparent, prevent side bleed with FrontSide
+                        // Optimize transparency: auto renderOrder, smart double-sided detection
+                        const meshList = [];
                         loadedModel.traverse(function(node) {
                             if (!node.isMesh) return;
-
-                            const materials = Array.isArray(node.material) ? node.material : [node.material];
-
+                            meshList.push(node);
+                        });
+                        
+                        // Calculate bounds for renderOrder assignment
+                        const boundingBox = new THREE.Box3().setFromObject(loadedModel);
+                        const centerPoint = boundingBox.getCenter(new THREE.Vector3());
+                        
+                        meshList.forEach(function(mesh, index) {
+                            const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+                            
+                            // Compute distance from center for depth ordering
+                            const meshCenter = new THREE.Vector3();
+                            if (mesh.geometry && mesh.geometry.boundingBox) {
+                                mesh.geometry.boundingBox.getCenter(meshCenter);
+                                meshCenter.applyMatrix4(mesh.matrixWorld);
+                            } else if (mesh.geometry) {
+                                mesh.geometry.computeBoundingBox();
+                                mesh.geometry.boundingBox.getCenter(meshCenter);
+                                meshCenter.applyMatrix4(mesh.matrixWorld);
+                            }
+                            const distFromCenter = meshCenter.distanceTo(centerPoint);
+                            
                             materials.forEach(mat => {
                                 if (!mat) return;
-
+                                
+                                // Enable transparency with preMult alpha support
                                 mat.transparent = true;
                                 mat.depthWrite = false;
-                                mat.side = THREE.FrontSide; // avoid backface showing through
                                 mat.alphaTest = 0.0;
                                 mat.blending = THREE.NormalBlending;
                                 mat.depthTest = true;
+                                
+                                // Detect if mesh is likely thick or thin
+                                let useDoubleSide = false;
+                                if (mesh.geometry && mesh.geometry.boundingBox) {
+                                    const size = mesh.geometry.boundingBox.getSize(new THREE.Vector3());
+                                    const avgSize = (size.x + size.y + size.z) / 3;
+                                    // If geometry has volume, use DoubleSide to show both sides
+                                    useDoubleSide = avgSize > 0.01;
+                                }
+                                
+                                mat.side = useDoubleSide ? THREE.DoubleSide : THREE.FrontSide;
                                 mat.needsUpdate = true;
                             });
-
-                            // Collect for per-frame distance-based sorting
-                            transparentMeshes.push(node);
+                            
+                            // Assign renderOrder based on distance from center (back-to-front)
+                            mesh.renderOrder = Math.round(distFromCenter * 1000);
                         });
                         
                         // Center the model
@@ -1884,23 +1914,6 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 // Removed Zoom on Scroll (Wheel) per request
 
 
-                // Per-frame sort transparent meshes by camera distance (back-to-front)
-                function updateTransparentOrder() {
-                    if (!transparentMeshes.length) return;
-                    scene.updateMatrixWorld(true);
-
-                    transparentMeshes.forEach(mesh => {
-                        mesh.getWorldPosition(_tempVec);
-                        mesh.userData._distToCamera = _tempVec.distanceTo(camera.position);
-                    });
-
-                    transparentMeshes.sort((a, b) => b.userData._distToCamera - a.userData._distToCamera);
-
-                    transparentMeshes.forEach((mesh, index) => {
-                        mesh.renderOrder = 1000 + index;
-                    });
-                }
-
                 // Animation Loop
                 function animate() {
                     requestAnimationFrame(animate);
@@ -1910,7 +1923,6 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                         modelGroup.rotation.y += 0.002;
                     }
 
-                    updateTransparentOrder();
                     renderer.render(scene, camera);
                 }
 
