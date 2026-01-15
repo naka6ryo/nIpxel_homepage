@@ -1748,26 +1748,19 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                         // Scale up the model 50x
                         loadedModel.scale.set(50, 50, 50);
                         
-                        // Debug: log ALL material properties to see what GLB contains
+                        // Debug: dump entire material object
                         console.log('=== GLB Material Debug ===');
                         let meshCount = 0;
                         loadedModel.traverse(function(node) {
-                            if (meshCount < 3) {
-                                console.log(`Node: ${node.name}, isMesh:`, node.isMesh, `material:`, node.material ? 'YES' : 'NO');
-                                if (node.isMesh && node.material) {
-                                    meshCount++;
-                                    const mats = Array.isArray(node.material) ? node.material : [node.material];
-                                    console.log(`  ==> Material Count: ${mats.length}`);
-                                    mats.forEach((mat, idx) => {
-                                        console.log(`    [${idx}] Type: ${mat.constructor.name}`);
-                                        console.log(`        transparent: ${mat.transparent}, opacity: ${mat.opacity}, alphaTest: ${mat.alphaTest}`);
-                                        console.log(`        alphaMap: ${mat.alphaMap ? 'yes' : 'no'}, map: ${mat.map ? 'yes' : 'no'}`);
-                                        console.log(`        depthWrite: ${mat.depthWrite}, side: ${mat.side}`);
-                                    });
-                                }
+                            if (node.isMesh && node.material && meshCount < 2) {
+                                meshCount++;
+                                console.log(`\n>>> Mesh: ${node.name}`);
+                                const mats = Array.isArray(node.material) ? node.material : [node.material];
+                                console.log('Material object:', mats[0]);
+                                console.log('Full material keys:', Object.keys(mats[0]));
                             }
                         });
-                        console.log('=== End Material Debug ===\n');
+                        console.log('=== End Debug ===\n');
                         
                         // Center the model
                         const box = new THREE.Box3().setFromObject(loadedModel);
