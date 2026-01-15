@@ -1747,40 +1747,6 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                         
                         // Scale up the model 50x
                         loadedModel.scale.set(50, 50, 50);
-
-                        // Detect alpha; only alpha meshes are transparent. Opaque meshes write depth to occlude others.
-                        loadedModel.traverse(function(node) {
-                            if (!node.isMesh) return;
-
-                            const materials = Array.isArray(node.material) ? node.material : [node.material];
-
-                            materials.forEach(mat => {
-                                if (!mat) return;
-
-                                const hasAlpha = (
-                                    mat.transparent ||
-                                    mat.opacity < 0.999 ||
-                                    (mat.alphaTest && mat.alphaTest > 0) ||
-                                    mat.alphaMap ||
-                                    (mat.map && mat.map.format === THREE.RGBAFormat)
-                                );
-
-                                if (hasAlpha) {
-                                    mat.transparent = true;
-                                    mat.depthWrite = false;
-                                    mat.alphaTest = Math.max(mat.alphaTest || 0, 0.0);
-                                    mat.blending = THREE.NormalBlending;
-                                } else {
-                                    mat.transparent = false;
-                                    mat.depthWrite = true;  // keep depth for occlusion
-                                    mat.alphaTest = 0.0;
-                                    mat.blending = THREE.NormalBlending;
-                                }
-
-                                mat.depthTest = true;
-                                mat.needsUpdate = true;
-                            });
-                        });
                         
                         // Center the model
                         const box = new THREE.Box3().setFromObject(loadedModel);
