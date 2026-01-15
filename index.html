@@ -28,9 +28,10 @@
     <!-- Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- Three.js (Added for 3D Viewer) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <!-- Three.js (Added for 3D Viewer) - Match reference viewer version r176 -->
+    <script src="https://unpkg.com/three@0.176.0/build/three.min.js"></script>
+    <script src="https://unpkg.com/three@0.176.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://unpkg.com/three@0.176.0/examples/js/loaders/DRACOLoader.js"></script>
 
     <script>
         tailwind.config = {
@@ -1731,8 +1732,11 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 const loader = new THREE.GLTFLoader();
                 let loadedModel = null;
 
-                // DRACOLoader不要で試す
-                loader.setCrossOrigin('anonymous');
+                // Setup DRACOLoader - critical for GLB decompression
+                const dracoLoader = new THREE.DRACOLoader();
+                dracoLoader.setDecoderPath('https://unpkg.com/three@0.176.0/examples/js/libs/draco/gltf/');
+                loader.setCrossOrigin('anonymous')
+                    .setDRACOLoader(dracoLoader);
 
                 loader.load(
                     'nIpxel.glb',
