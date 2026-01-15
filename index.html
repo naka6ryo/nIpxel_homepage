@@ -28,10 +28,9 @@
     <!-- Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- Three.js - Latest version matching reference viewer -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r176/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r176/GLTFLoader.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r176/DRACOLoader.min.js"></script>
+    <!-- Three.js (Added for 3D Viewer) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
     <script>
         tailwind.config = {
@@ -1715,12 +1714,21 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 scene.environment = envTexture;
 
                 // Lighting
-                const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
                 scene.add(ambientLight);
 
-                const dirLight = new THREE.DirectionalLight(0xffffff, 0.8 * Math.PI);
+                const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
                 dirLight.position.set(5, 5, 5);
                 scene.add(dirLight);
+
+                const neonLight = new THREE.PointLight(0xff3b1f, 1.5, 10);
+                neonLight.position.set(-2, 1, 2);
+                scene.add(neonLight);
+                
+                const rimLight = new THREE.SpotLight(0x0088ff, 1);
+                rimLight.position.set(0, 5, -5);
+                rimLight.lookAt(0,0,0);
+                scene.add(rimLight);
 
 
                 // --- Load GLB Model ---
@@ -1732,38 +1740,35 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 const loader = new THREE.GLTFLoader();
                 let loadedModel = null;
 
-                // Setup DRACOLoader - CRITICAL for compressed GLB files
-                const dracoLoader = new THREE.DRACOLoader();
-                dracoLoader.setDecoderPath('https://cdnjs.cloudflare.com/ajax/libs/three.js/r176/');
-                loader.setDRACOLoader(dracoLoader);
-                loader.setCrossOrigin('anonymous');
-
                 loader.load(
                     'nIpxel.glb',
                     function(gltf) {
-                        console.log('✓ GLB loaded successfully');
-                        console.log('File URL: nIpxel.glb (relative path)');
-                        console.log('Resolved URL would be:', window.location.origin + window.location.pathname.replace('index.html', '') + 'nIpxel.glb');
-                        console.log('Scene:', gltf.scene);
-                        console.log('Animations:', gltf.animations.length);
                         loadedModel = gltf.scene;
                         
                         // Scale up the model 50x
                         loadedModel.scale.set(50, 50, 50);
-                        
-                        // Debug: Check if transparent materials exist
-                        let transparentCount = 0;
+
+                        // Simple approach: treat all meshes as transparent, prevent side bleed with FrontSide
                         loadedModel.traverse(function(node) {
-                            if (node.isMesh && node.material) {
-                                const mats = Array.isArray(node.material) ? node.material : [node.material];
-                                mats.forEach(mat => {
-                                    if (mat.transparent || mat.opacity < 0.999) {
-                                        transparentCount++;
-                                    }
-                                });
-                            }
+                            if (!node.isMesh) return;
+
+                            const materials = Array.isArray(node.material) ? node.material : [node.material];
+
+                            materials.forEach(mat => {
+                                if (!mat) return;
+
+                                mat.transparent = true;
+                                mat.depthWrite = false;
+                                mat.side = THREE.FrontSide; // avoid backface showing through
+                                mat.alphaTest = 0.0;
+                                mat.blending = THREE.NormalBlending;
+                                mat.depthTest = true;
+                                mat.needsUpdate = true;
+                            });
+
+                            // Collect for per-frame distance-based sorting
+                            transparentMeshes.push(node);
                         });
-                        console.log(`Transparent materials found: ${transparentCount}`);
                         
                         // Center the model
                         const box = new THREE.Box3().setFromObject(loadedModel);
@@ -1782,8 +1787,7 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                         console.log((xhr.loaded / xhr.total * 100) + '% loaded');
                     },
                     function(error) {
-                        console.error('✗ GLB loading error:', error);
-                        console.error('Error message:', error.message);
+                        console.error('Error loading GLB model:', error);
                     }
                 );
 
@@ -1880,6 +1884,23 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 // Removed Zoom on Scroll (Wheel) per request
 
 
+                // Per-frame sort transparent meshes by camera distance (back-to-front)
+                function updateTransparentOrder() {
+                    if (!transparentMeshes.length) return;
+                    scene.updateMatrixWorld(true);
+
+                    transparentMeshes.forEach(mesh => {
+                        mesh.getWorldPosition(_tempVec);
+                        mesh.userData._distToCamera = _tempVec.distanceTo(camera.position);
+                    });
+
+                    transparentMeshes.sort((a, b) => b.userData._distToCamera - a.userData._distToCamera);
+
+                    transparentMeshes.forEach((mesh, index) => {
+                        mesh.renderOrder = 1000 + index;
+                    });
+                }
+
                 // Animation Loop
                 function animate() {
                     requestAnimationFrame(animate);
@@ -1889,6 +1910,7 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                         modelGroup.rotation.y += 0.002;
                     }
 
+                    updateTransparentOrder();
                     renderer.render(scene, camera);
                 }
 
