@@ -1694,8 +1694,20 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
                 renderer.setSize(container.clientWidth, container.clientHeight);
                 renderer.setPixelRatio(window.devicePixelRatio);
+                renderer.outputEncoding = THREE.sRGBEncoding;
+                renderer.toneMapping = THREE.ACESFilmicToneMapping;
+                renderer.toneMappingExposure = 1.0;
                 renderer.sortObjects = true;
                 container.appendChild(renderer.domElement);
+
+                // Environment Setup
+                const pmremGenerator = new THREE.PMREMGenerator(renderer);
+                pmremGenerator.compileEquirectangularShader();
+                
+                // Create neutral environment
+                const neutralScene = new THREE.Scene();
+                const envTexture = pmremGenerator.fromScene(neutralScene, 0.04).texture;
+                scene.environment = envTexture;
 
                 // Lighting
                 const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
@@ -1733,10 +1745,21 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                         // Enable transparency for all materials
                         loadedModel.traverse(function(node) {
                             if (node.isMesh) {
-                                if (node.material) {
-                                    node.material.transparent = true;
-                                    node.material.depthWrite = false;
-                                    node.material.side = THREE.DoubleSide;
+                                if (Array.isArray(node.material)) {
+                                    node.material.forEach(mat => {
+                                        if (mat.transparent || mat.opacity < 1.0) {
+                                            mat.transparent = true;
+                                            mat.depthWrite = false;
+                                            mat.side = THREE.DoubleSide;
+                                        }
+                                        mat.needsUpdate = true;
+                                    });
+                                } else if (node.material) {
+                                    if (node.material.transparent || node.material.opacity < 1.0) {
+                                        node.material.transparent = true;
+                                        node.material.depthWrite = false;
+                                        node.material.side = THREE.DoubleSide;
+                                    }
                                     node.material.needsUpdate = true;
                                 }
                             }
