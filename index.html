@@ -1752,23 +1752,19 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                         console.log('=== GLB Material Debug ===');
                         let meshCount = 0;
                         loadedModel.traverse(function(node) {
-                            if (node.isMesh && node.material && meshCount < 5) {
-                                meshCount++;
-                                const mats = Array.isArray(node.material) ? node.material : [node.material];
-                                console.log(`\n>>> Mesh: ${node.name}`);
-                                mats.forEach((mat, idx) => {
-                                    console.log(`    Material[${idx}]:`, {
-                                        type: mat.constructor.name,
-                                        transparent: mat.transparent,
-                                        opacity: mat.opacity,
-                                        alphaTest: mat.alphaTest,
-                                        alphaMap: mat.alphaMap ? 'yes' : 'no',
-                                        map: mat.map ? `yes (${mat.map.format})` : 'no',
-                                        blending: mat.blending,
-                                        depthWrite: mat.depthWrite,
-                                        side: mat.side
+                            if (meshCount < 3) {
+                                console.log(`Node: ${node.name}, isMesh:`, node.isMesh, `material:`, node.material ? 'YES' : 'NO');
+                                if (node.isMesh && node.material) {
+                                    meshCount++;
+                                    const mats = Array.isArray(node.material) ? node.material : [node.material];
+                                    console.log(`  ==> Material Count: ${mats.length}`);
+                                    mats.forEach((mat, idx) => {
+                                        console.log(`    [${idx}] Type: ${mat.constructor.name}`);
+                                        console.log(`        transparent: ${mat.transparent}, opacity: ${mat.opacity}, alphaTest: ${mat.alphaTest}`);
+                                        console.log(`        alphaMap: ${mat.alphaMap ? 'yes' : 'no'}, map: ${mat.map ? 'yes' : 'no'}`);
+                                        console.log(`        depthWrite: ${mat.depthWrite}, side: ${mat.side}`);
                                     });
-                                });
+                                }
                             }
                         });
                         console.log('=== End Material Debug ===\n');
