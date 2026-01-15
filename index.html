@@ -1734,6 +1734,8 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 // --- Load GLB Model ---
                 const modelGroup = new THREE.Group();
                 scene.add(modelGroup);
+                const transparentMeshes = [];
+                const _tempVec = new THREE.Vector3();
 
                 const loader = new THREE.GLTFLoader();
                 let loadedModel = null;
@@ -1763,6 +1765,9 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                                 mat.depthTest = true;
                                 mat.needsUpdate = true;
                             });
+
+                            // Collect for per-frame distance-based sorting
+                            transparentMeshes.push(node);
                         });
                         
                         // Center the model
@@ -1879,6 +1884,23 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 // Removed Zoom on Scroll (Wheel) per request
 
 
+                // Per-frame sort transparent meshes by camera distance (back-to-front)
+                function updateTransparentOrder() {
+                    if (!transparentMeshes.length) return;
+                    scene.updateMatrixWorld(true);
+
+                    transparentMeshes.forEach(mesh => {
+                        mesh.getWorldPosition(_tempVec);
+                        mesh.userData._distToCamera = _tempVec.distanceTo(camera.position);
+                    });
+
+                    transparentMeshes.sort((a, b) => b.userData._distToCamera - a.userData._distToCamera);
+
+                    transparentMeshes.forEach((mesh, index) => {
+                        mesh.renderOrder = 1000 + index;
+                    });
+                }
+
                 // Animation Loop
                 function animate() {
                     requestAnimationFrame(animate);
@@ -1888,6 +1910,7 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                         modelGroup.rotation.y += 0.002;
                     }
 
+                    updateTransparentOrder();
                     renderer.render(scene, camera);
                 }
 
