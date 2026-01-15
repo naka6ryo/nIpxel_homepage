@@ -1726,6 +1726,9 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                     function(gltf) {
                         loadedModel = gltf.scene;
                         
+                        // Scale up the model 100x
+                        loadedModel.scale.set(100, 100, 100);
+                        
                         // Center the model
                         const box = new THREE.Box3().setFromObject(loadedModel);
                         const center = box.getCenter(new THREE.Vector3());
