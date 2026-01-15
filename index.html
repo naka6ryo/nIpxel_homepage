@@ -1745,18 +1745,17 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                         // Scale up the model 50x
                         loadedModel.scale.set(50, 50, 50);
                         
-                        // Optimize materials for proper transparency
+                        // Enable transparency for all materials
                         loadedModel.traverse(function(node) {
                             if (node.isMesh) {
                                 const materials = Array.isArray(node.material) ? node.material : [node.material];
                                 
                                 materials.forEach(mat => {
                                     if (mat) {
-                                        // Only modify if already transparent in GLTF
-                                        if (mat.transparent) {
-                                            mat.depthWrite = false;
-                                            mat.side = THREE.DoubleSide;
-                                        }
+                                        // Always enable transparency to show alpha channel
+                                        mat.transparent = true;
+                                        mat.depthWrite = false;
+                                        mat.side = THREE.DoubleSide;
                                         mat.needsUpdate = true;
                                     }
                                 });
