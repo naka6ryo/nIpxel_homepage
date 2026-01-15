@@ -32,6 +32,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/meshopt_decoder.module.js"></script>
 
     <script>
         tailwind.config = {
@@ -1745,6 +1746,11 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 const dracoLoader = new THREE.DRACOLoader();
                 dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/draco/gltf/');
                 loader.setDRACOLoader(dracoLoader);
+                
+                // Setup MeshoptDecoder if available
+                if (window.MeshoptDecoder) {
+                    loader.setMeshoptDecoder(window.MeshoptDecoder);
+                }
 
                 loader.load(
                     'nIpxel.glb',
@@ -1754,19 +1760,19 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                         // Scale up the model 50x
                         loadedModel.scale.set(50, 50, 50);
                         
-                        // Debug: dump entire material object
-                        console.log('=== GLB Material Debug ===');
-                        let meshCount = 0;
+                        // Debug: Check if transparent materials exist
+                        let transparentCount = 0;
                         loadedModel.traverse(function(node) {
-                            if (node.isMesh && node.material && meshCount < 2) {
-                                meshCount++;
-                                console.log(`\n>>> Mesh: ${node.name}`);
+                            if (node.isMesh && node.material) {
                                 const mats = Array.isArray(node.material) ? node.material : [node.material];
-                                console.log('Material object:', mats[0]);
-                                console.log('Full material keys:', Object.keys(mats[0]));
+                                mats.forEach(mat => {
+                                    if (mat.transparent || mat.opacity < 0.999) {
+                                        transparentCount++;
+                                    }
+                                });
                             }
                         });
-                        console.log('=== End Debug ===\n');
+                        console.log(`Transparent materials found: ${transparentCount}`);
                         
                         // Center the model
                         const box = new THREE.Box3().setFromObject(loadedModel);
