@@ -29,10 +29,8 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <!-- Three.js (Added for 3D Viewer) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r176/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@r176/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@r176/examples/js/loaders/DRACOLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@r176/examples/js/libs/meshopt_decoder.module.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/GLTFLoader.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -1733,16 +1731,8 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 const loader = new THREE.GLTFLoader();
                 let loadedModel = null;
 
-                // Setup DRACOLoader for proper decompression
-                const dracoLoader = new THREE.DRACOLoader();
-                dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@r176/examples/js/libs/draco/gltf/');
-                loader.setCrossOrigin('anonymous')
-                    .setDRACOLoader(dracoLoader);
-                
-                // Setup MeshoptDecoder if available
-                if (window.MeshoptDecoder) {
-                    loader.setMeshoptDecoder(window.MeshoptDecoder);
-                }
+                // DRACOLoader不要で試す
+                loader.setCrossOrigin('anonymous');
 
                 loader.load(
                     'nIpxel.glb',
