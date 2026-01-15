@@ -1691,13 +1691,16 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 camera.lookAt(0, 0, 0);
 
                 // Renderer
-                const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                const renderer = new THREE.WebGLRenderer({ 
+                    antialias: true, 
+                    alpha: true,
+                    premultipliedAlpha: true
+                });
                 renderer.setSize(container.clientWidth, container.clientHeight);
                 renderer.setPixelRatio(window.devicePixelRatio);
                 renderer.outputEncoding = THREE.sRGBEncoding;
                 renderer.toneMapping = THREE.ACESFilmicToneMapping;
                 renderer.toneMappingExposure = 1.0;
-                renderer.sortObjects = true;
                 container.appendChild(renderer.domElement);
 
                 // Environment Setup
@@ -1742,27 +1745,21 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                         // Scale up the model 50x
                         loadedModel.scale.set(50, 50, 50);
                         
-                        // Force transparency for all materials
+                        // Optimize materials for proper transparency
                         loadedModel.traverse(function(node) {
                             if (node.isMesh) {
                                 const materials = Array.isArray(node.material) ? node.material : [node.material];
                                 
                                 materials.forEach(mat => {
                                     if (mat) {
-                                        // Force enable transparency
-                                        mat.transparent = true;
-                                        mat.depthWrite = false;
-                                        mat.side = THREE.DoubleSide;
-                                        
-                                        // Ensure opacity is respected (don't override it)
-                                        // mat.opacity already set by GLTF loader
-                                        
+                                        // Only modify if already transparent in GLTF
+                                        if (mat.transparent) {
+                                            mat.depthWrite = false;
+                                            mat.side = THREE.DoubleSide;
+                                        }
                                         mat.needsUpdate = true;
                                     }
                                 });
-                                
-                                // Render transparent objects last
-                                node.renderOrder = 100;
                             }
                         });
                         
