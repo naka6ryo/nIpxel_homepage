@@ -1783,8 +1783,8 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
 
                                 mat.transparent = true;
                                 mat.depthWrite = false;
-                                // Use DoubleSide for thick meshes (size > 0.4), FrontSide for thin ones
-                                mat.side = thickness > 0.4 ? THREE.DoubleSide : THREE.FrontSide;
+                                // Use DoubleSide for thick meshes (size > 0.1), FrontSide for thin ones
+                                mat.side = thickness > 0.1 ? THREE.DoubleSide : THREE.FrontSide;
                                 mat.alphaTest = 0.0;
                                 mat.blending = THREE.NormalBlending;
                                 mat.depthTest = true;
