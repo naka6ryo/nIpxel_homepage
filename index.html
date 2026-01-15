@@ -1821,6 +1821,8 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 // --- Interaction Logic (Raycasting) ---
                 let isDragging = false;
                 let previousMousePosition = { x: 0, y: 0 };
+                let inertiaVelocity = { x: 0, y: 0 };
+                let lastDragTime = 0;
                 
                 const raycaster = new THREE.Raycaster();
                 const mouse = new THREE.Vector2();
@@ -1863,12 +1865,20 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                     modelGroup.rotation.y += deltaMove.x * rotationSpeed;
                     modelGroup.rotation.x += deltaMove.y * rotationSpeed;
 
+                    // Record velocity for inertia
+                    inertiaVelocity.x = deltaMove.x * rotationSpeed;
+                    inertiaVelocity.y = deltaMove.y * rotationSpeed;
+                    lastDragTime = performance.now();
+
                     previousMousePosition = { x: e.offsetX, y: e.offsetY };
                 });
 
                 document.addEventListener('mouseup', () => {
-                    isDragging = false;
-                    container.style.cursor = 'default';
+                    if (isDragging) {
+                        isDragging = false;
+                        container.style.cursor = 'default';
+                        // Keep inertiaVelocity for momentum
+                    }
                 });
                 
                 // Touch Events for Mobile
@@ -1901,11 +1911,19 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                     modelGroup.rotation.y += deltaMove.x * rotationSpeed;
                     modelGroup.rotation.x += deltaMove.y * rotationSpeed;
 
+                    // Record velocity for inertia
+                    inertiaVelocity.x = deltaMove.x * rotationSpeed;
+                    inertiaVelocity.y = deltaMove.y * rotationSpeed;
+                    lastDragTime = performance.now();
+
                     previousMousePosition = { x: currentX, y: currentY };
                 }, { passive: false });
 
                 container.addEventListener('touchend', () => {
-                    isDragging = false;
+                    if (isDragging) {
+                        isDragging = false;
+                        // Keep inertiaVelocity for momentum
+                    }
                 });
                 
                 // Removed Zoom on Scroll (Wheel) per request
@@ -1915,9 +1933,23 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 function animate() {
                     requestAnimationFrame(animate);
                     
-                    // Idle animation (slow rotation)
                     if (!isDragging) {
-                        modelGroup.rotation.y += 0.002;
+                        // Apply inertia if recent drag
+                        const timeSinceDrag = performance.now() - lastDragTime;
+                        if (timeSinceDrag < 100 && (Math.abs(inertiaVelocity.x) > 0.0001 || Math.abs(inertiaVelocity.y) > 0.0001)) {
+                            modelGroup.rotation.y += inertiaVelocity.x;
+                            modelGroup.rotation.x += inertiaVelocity.y;
+                            
+                            // Apply friction (damping)
+                            const damping = 0.95;
+                            inertiaVelocity.x *= damping;
+                            inertiaVelocity.y *= damping;
+                        } else {
+                            // Idle animation (slow rotation) when no inertia
+                            if (Math.abs(inertiaVelocity.x) < 0.0001 && Math.abs(inertiaVelocity.y) < 0.0001) {
+                                modelGroup.rotation.y += 0.002;
+                            }
+                        }
                     }
 
                     renderer.render(scene, camera);
