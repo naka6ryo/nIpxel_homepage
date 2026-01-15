@@ -1742,28 +1742,44 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                         // Scale up the model 50x
                         loadedModel.scale.set(50, 50, 50);
                         
-                        // Enable transparency for all materials
+                        // Properly handle transparency
+                        const transparentMeshes = [];
+                        const opaqueMeshes = [];
+                        
                         loadedModel.traverse(function(node) {
                             if (node.isMesh) {
-                                if (Array.isArray(node.material)) {
-                                    node.material.forEach(mat => {
-                                        if (mat.transparent || mat.opacity < 1.0) {
+                                const materials = Array.isArray(node.material) ? node.material : [node.material];
+                                let hasTransparency = false;
+                                
+                                materials.forEach(mat => {
+                                    if (mat) {
+                                        // Check if material has transparency
+                                        if (mat.transparent || mat.opacity < 1.0 || mat.alphaTest > 0) {
                                             mat.transparent = true;
                                             mat.depthWrite = false;
                                             mat.side = THREE.DoubleSide;
+                                            hasTransparency = true;
+                                        } else {
+                                            // Keep opaque materials as is
+                                            mat.transparent = false;
+                                            mat.depthWrite = true;
                                         }
                                         mat.needsUpdate = true;
-                                    });
-                                } else if (node.material) {
-                                    if (node.material.transparent || node.material.opacity < 1.0) {
-                                        node.material.transparent = true;
-                                        node.material.depthWrite = false;
-                                        node.material.side = THREE.DoubleSide;
                                     }
-                                    node.material.needsUpdate = true;
+                                });
+                                
+                                // Sort meshes by transparency
+                                if (hasTransparency) {
+                                    transparentMeshes.push(node);
+                                } else {
+                                    opaqueMeshes.push(node);
                                 }
                             }
                         });
+                        
+                        // Set render order: opaque first, then transparent
+                        opaqueMeshes.forEach(mesh => mesh.renderOrder = 0);
+                        transparentMeshes.forEach((mesh, index) => mesh.renderOrder = 1 + index);
                         
                         // Center the model
                         const box = new THREE.Box3().setFromObject(loadedModel);
