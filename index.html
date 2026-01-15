@@ -1748,6 +1748,24 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                         // Scale up the model 50x
                         loadedModel.scale.set(50, 50, 50);
                         
+                        // Debug: log material properties to verify transparency was loaded
+                        loadedModel.traverse(function(node) {
+                            if (node.isMesh && node.material) {
+                                const mats = Array.isArray(node.material) ? node.material : [node.material];
+                                mats.forEach((mat, idx) => {
+                                    if (mat.transparent || mat.opacity < 1) {
+                                        console.log(`Mesh: ${node.name}, Material ${idx}:`, {
+                                            transparent: mat.transparent,
+                                            opacity: mat.opacity,
+                                            alphaTest: mat.alphaTest,
+                                            blending: mat.blending,
+                                            depthWrite: mat.depthWrite
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                        
                         // Center the model
                         const box = new THREE.Box3().setFromObject(loadedModel);
                         const center = box.getCenter(new THREE.Vector3());
