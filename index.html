@@ -1934,21 +1934,21 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                     requestAnimationFrame(animate);
                     
                     if (!isDragging) {
-                        // Apply inertia if recent drag
+                        // Apply inertia
                         const timeSinceDrag = performance.now() - lastDragTime;
-                        if (timeSinceDrag < 100 && (Math.abs(inertiaVelocity.x) > 0.0001 || Math.abs(inertiaVelocity.y) > 0.0001)) {
+                        if (timeSinceDrag < 3000 && (Math.abs(inertiaVelocity.x) > 0.00001 || Math.abs(inertiaVelocity.y) > 0.00001)) {
                             modelGroup.rotation.y += inertiaVelocity.x;
                             modelGroup.rotation.x += inertiaVelocity.y;
                             
-                            // Apply friction (damping)
-                            const damping = 0.95;
+                            // Apply friction (damping) - slower decay
+                            const damping = 0.97;
                             inertiaVelocity.x *= damping;
                             inertiaVelocity.y *= damping;
                         } else {
-                            // Idle animation (slow rotation) when no inertia
-                            if (Math.abs(inertiaVelocity.x) < 0.0001 && Math.abs(inertiaVelocity.y) < 0.0001) {
-                                modelGroup.rotation.y += 0.002;
-                            }
+                            // Reset inertia and restore idle animation
+                            inertiaVelocity.x = 0;
+                            inertiaVelocity.y = 0;
+                            modelGroup.rotation.y += 0.002;
                         }
                     }
 
