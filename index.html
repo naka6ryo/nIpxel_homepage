@@ -1746,7 +1746,7 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                         // Scale up the model 50x
                         loadedModel.scale.set(50, 50, 50);
 
-                        // Respect GLB materials, but ensure transparent surfaces don't write depth
+                        // Respect GLB materials; gently fix transparency ordering
                         loadedModel.traverse(function(node) {
                             if (!node.isMesh) return;
 
@@ -1755,14 +1755,21 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                             materials.forEach(mat => {
                                 if (!mat) return;
 
-                                const isTransparent = (mat.transparent === true) || mat.opacity < 0.999 || mat.alphaTest > 0;
+                                const hasAlpha = (
+                                    mat.transparent ||
+                                    mat.opacity < 0.999 ||
+                                    (mat.alphaTest && mat.alphaTest > 0) ||
+                                    mat.alphaMap ||
+                                    (mat.map && mat.map.format === THREE.RGBAFormat)
+                                );
 
-                                // Ensure transparent surfaces blend correctly
-                                if (isTransparent) {
+                                if (hasAlpha) {
                                     mat.transparent = true;
                                     mat.depthWrite = false;
-                                    mat.blending = THREE.NormalBlending;
+                                    mat.side = THREE.DoubleSide;
+                                    mat.alphaTest = Math.max(mat.alphaTest || 0, 0.01);
                                 } else {
+                                    mat.transparent = false;
                                     mat.depthWrite = true;
                                 }
 
