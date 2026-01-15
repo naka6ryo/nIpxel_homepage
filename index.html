@@ -1701,6 +1701,7 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 renderer.outputEncoding = THREE.sRGBEncoding;
                 renderer.toneMapping = THREE.ACESFilmicToneMapping;
                 renderer.toneMappingExposure = 1.0;
+                renderer.sortObjects = true; // keep default sorting for transparency
                 container.appendChild(renderer.domElement);
 
                 // Environment Setup
@@ -1745,23 +1746,21 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                         // Scale up the model 50x
                         loadedModel.scale.set(50, 50, 50);
 
-                        // Respect original GLB opacity; only toggle when actually transparent
+                        // Respect GLB materials, but ensure transparent surfaces don't write depth
                         loadedModel.traverse(function(node) {
-                            if (node.isMesh) {
-                                const materials = Array.isArray(node.material) ? node.material : [node.material];
+                            if (!node.isMesh) return;
 
-                                materials.forEach(mat => {
-                                    if (!mat) return;
+                            const materials = Array.isArray(node.material) ? node.material : [node.material];
 
-                                    const isTransparent = mat.transparent || mat.opacity < 0.999 || mat.alphaTest > 0;
+                            materials.forEach(mat => {
+                                if (!mat) return;
 
-                                    // Do not force double side; keep authoring intent
-                                    mat.transparent = isTransparent;
-                                    mat.depthWrite = !isTransparent; // transparent surfaces shouldn't write depth
-                                    mat.depthTest = true;
-                                    mat.needsUpdate = true;
-                                });
-                            }
+                                const isTransparent = mat.transparent || mat.opacity < 0.999;
+                                // Keep original transparent flag; only adjust depthWrite to avoid artifacts
+                                mat.depthWrite = !isTransparent;
+                                mat.depthTest = true;
+                                mat.needsUpdate = true;
+                            });
                         });
                         
                         // Center the model
