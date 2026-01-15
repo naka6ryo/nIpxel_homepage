@@ -1726,8 +1726,20 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                     function(gltf) {
                         loadedModel = gltf.scene;
                         
-                        // Scale up the model 100x
-                        loadedModel.scale.set(100, 100, 100);
+                        // Scale up the model 50x
+                        loadedModel.scale.set(50, 50, 50);
+                        
+                        // Enable transparency for all materials
+                        loadedModel.traverse(function(node) {
+                            if (node.isMesh) {
+                                if (node.material) {
+                                    node.material.transparent = true;
+                                    node.material.alphaTest = 0.01;
+                                    node.material.depthWrite = true;
+                                    node.material.side = THREE.DoubleSide;
+                                }
+                            }
+                        });
                         
                         // Center the model
                         const box = new THREE.Box3().setFromObject(loadedModel);
