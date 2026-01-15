@@ -1736,7 +1736,8 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                 // Setup DRACOLoader for proper decompression
                 const dracoLoader = new THREE.DRACOLoader();
                 dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/draco/gltf/');
-                loader.setDRACOLoader(dracoLoader);
+                loader.setCrossOrigin('anonymous')
+                    .setDRACOLoader(dracoLoader);
                 
                 // Setup MeshoptDecoder if available
                 if (window.MeshoptDecoder) {
