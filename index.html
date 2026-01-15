@@ -1786,7 +1786,7 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                                 // Use DoubleSide for thick meshes (size > 0.5), FrontSide for thin ones
                                 mat.side = thickness > 0.5 ? THREE.DoubleSide : THREE.FrontSide;
                                 mat.alphaTest = 0.0;
-                                mat.blending = THREE.PremultipliedAlphaBlending;
+                                mat.blending = THREE.NormalBlending;
                                 mat.depthTest = true;
                                 mat.needsUpdate = true;
                             });
@@ -1809,7 +1809,9 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                         modelGroup.rotation.y = Math.PI / 4;
                     },
                     function(xhr) {
-                        console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+                        if (xhr.total > 0) {
+                            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+                        }
                     },
                     function(error) {
                         console.error('Error loading GLB model:', error);
