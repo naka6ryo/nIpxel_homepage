@@ -1744,20 +1744,22 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                         
                         // Scale up the model 50x
                         loadedModel.scale.set(50, 50, 50);
-                        
-                        // Enable transparency for all materials
+
+                        // Respect original GLB opacity; only toggle when actually transparent
                         loadedModel.traverse(function(node) {
                             if (node.isMesh) {
                                 const materials = Array.isArray(node.material) ? node.material : [node.material];
-                                
+
                                 materials.forEach(mat => {
-                                    if (mat) {
-                                        // Always enable transparency to show alpha channel
-                                        mat.transparent = true;
-                                        mat.depthWrite = false;
-                                        mat.side = THREE.DoubleSide;
-                                        mat.needsUpdate = true;
-                                    }
+                                    if (!mat) return;
+
+                                    const isTransparent = mat.transparent || mat.opacity < 0.999 || mat.alphaTest > 0;
+
+                                    // Do not force double side; keep authoring intent
+                                    mat.transparent = isTransparent;
+                                    mat.depthWrite = !isTransparent; // transparent surfaces shouldn't write depth
+                                    mat.depthTest = true;
+                                    mat.needsUpdate = true;
                                 });
                             }
                         });
