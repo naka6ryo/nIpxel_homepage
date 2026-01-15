@@ -1750,23 +1750,28 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                         
                         // Debug: log ALL material properties to see what GLB contains
                         console.log('=== GLB Material Debug ===');
+                        let meshCount = 0;
                         loadedModel.traverse(function(node) {
-                            if (node.isMesh && node.material) {
+                            if (node.isMesh && node.material && meshCount < 5) {
+                                meshCount++;
                                 const mats = Array.isArray(node.material) ? node.material : [node.material];
-                                console.log(`Mesh: ${node.name} (${mats.length} materials)`);
+                                console.log(`\n>>> Mesh: ${node.name}`);
                                 mats.forEach((mat, idx) => {
-                                    console.log(`  Mat[${idx}]:`, {
+                                    console.log(`    Material[${idx}]:`, {
                                         type: mat.constructor.name,
                                         transparent: mat.transparent,
                                         opacity: mat.opacity,
                                         alphaTest: mat.alphaTest,
                                         alphaMap: mat.alphaMap ? 'yes' : 'no',
-                                        map: mat.map ? 'yes' : 'no',
-                                        blending: mat.blending
+                                        map: mat.map ? `yes (${mat.map.format})` : 'no',
+                                        blending: mat.blending,
+                                        depthWrite: mat.depthWrite,
+                                        side: mat.side
                                     });
                                 });
                             }
                         });
+                        console.log('=== End Material Debug ===\n');
                         
                         // Center the model
                         const box = new THREE.Box3().setFromObject(loadedModel);
