@@ -1746,10 +1746,36 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                         // Scale up the model 50x
                         loadedModel.scale.set(50, 50, 50);
 
-                        // Simple approach: treat all meshes as transparent, prevent side bleed with FrontSide
+                        // Compute camera-to-mesh distance for proper renderOrder sorting
+                        const cameraWorldPos = camera.getWorldPosition(new THREE.Vector3());
+                        
+                        // Collect all meshes with size info for DoubleSide detection
+                        const meshInfoList = [];
                         loadedModel.traverse(function(node) {
                             if (!node.isMesh) return;
 
+                            const worldPos = node.getWorldPosition(new THREE.Vector3());
+                            const distance = cameraWorldPos.distanceTo(worldPos);
+                            
+                            // Compute bounding box to detect thick/large meshes
+                            const box = new THREE.Box3().setFromObject(node);
+                            const size = box.getSize(new THREE.Vector3());
+                            const maxDim = Math.max(size.x, size.y, size.z);
+                            
+                            meshInfoList.push({
+                                node: node,
+                                distance: distance,
+                                thickness: maxDim
+                            });
+                        });
+
+                        // Sort by camera distance (far to near) for proper renderOrder
+                        meshInfoList.sort((a, b) => b.distance - a.distance);
+
+                        // Apply material settings and renderOrder
+                        meshInfoList.forEach((info, index) => {
+                            const node = info.node;
+                            const thickness = info.thickness;
                             const materials = Array.isArray(node.material) ? node.material : [node.material];
 
                             materials.forEach(mat => {
@@ -1757,12 +1783,16 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
 
                                 mat.transparent = true;
                                 mat.depthWrite = false;
-                                mat.side = THREE.FrontSide; // avoid backface showing through
+                                // Use DoubleSide for thick meshes (size > 0.5), FrontSide for thin ones
+                                mat.side = thickness > 0.5 ? THREE.DoubleSide : THREE.FrontSide;
                                 mat.alphaTest = 0.0;
-                                mat.blending = THREE.NormalBlending;
+                                mat.blending = THREE.PremultipliedAlphaBlending;
                                 mat.depthTest = true;
                                 mat.needsUpdate = true;
                             });
+
+                            // Set renderOrder based on distance (far objects rendered first)
+                            node.renderOrder = index;
                         });
                         
                         // Center the model
@@ -1886,28 +1916,6 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                     // Idle animation (slow rotation)
                     if (!isDragging) {
                         modelGroup.rotation.y += 0.002;
-                    }
-
-                    // Update renderOrder for transparent meshes based on camera distance
-                    if (loadedModel) {
-                        const meshes = [];
-                        loadedModel.traverse(function(node) {
-                            if (node.isMesh) {
-                                meshes.push(node);
-                            }
-                        });
-                        
-                        // Sort by distance from camera (farthest first)
-                        meshes.sort(function(a, b) {
-                            const distA = camera.position.distanceTo(a.getWorldPosition(new THREE.Vector3()));
-                            const distB = camera.position.distanceTo(b.getWorldPosition(new THREE.Vector3()));
-                            return distB - distA; // farthest = highest renderOrder
-                        });
-                        
-                        // Assign renderOrder based on sorted distance
-                        meshes.forEach(function(mesh, index) {
-                            mesh.renderOrder = index;
-                        });
                     }
 
                     renderer.render(scene, camera);
