@@ -263,22 +263,30 @@
 
         /* Object 1 layer - fade in after 1.0s */
         .title-layer-ob01 {
-            animation: heroReveal 1.9s cubic-bezier(0.22, 1, 0.36, 1) 0.9s forwards;
+            animation: heroReveal 1.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation-delay: 0s;
+            animation-play-state: paused;
         }
 
         /* Object 2 layer - fade in after 1.5s */
         .title-layer-ob02 {
-            animation: heroReveal 1.9s cubic-bezier(0.22, 1, 0.36, 1) 0.9s forwards;
+            animation: heroReveal 1.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation-delay: 0s;
+            animation-play-state: paused;
         }
 
         /* Copy 1 layer - fade in after 2.0s */
         .title-layer-copy01 {
-            animation: heroReveal 1.9s cubic-bezier(0.22, 1, 0.36, 1) 1.6s forwards;
+            animation: heroReveal 1.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation-delay: 0s;
+            animation-play-state: paused;
         }
 
         /* Copy 2 layer - fade in after 2.5s */
         .title-layer-copy02 {
-            animation: heroReveal 1.9s cubic-bezier(0.22, 1, 0.36, 1) 2.4s forwards;
+            animation: heroReveal 1.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation-delay: 0s;
+            animation-play-state: paused;
         }
 
         @keyframes heroReveal {
@@ -1322,6 +1330,29 @@ Haptics: When hit, the controller vibrates finely, letting you feel the damage">
                     // Add a slight delay before hiding to ensure smooth transition
                     setTimeout(() => {
                         loadingScreen.classList.add('hidden');
+                        
+                        // Start title layer animations after loading screen hides
+                        const titleLayerOb01 = document.querySelector('.title-layer-ob01');
+                        const titleLayerOb02 = document.querySelector('.title-layer-ob02');
+                        const titleLayerCopy01 = document.querySelector('.title-layer-copy01');
+                        const titleLayerCopy02 = document.querySelector('.title-layer-copy02');
+                        
+                        if (titleLayerOb01) {
+                            titleLayerOb01.style.animationDelay = '0.9s';
+                            titleLayerOb01.style.animationPlayState = 'running';
+                        }
+                        if (titleLayerOb02) {
+                            titleLayerOb02.style.animationDelay = '0.9s';
+                            titleLayerOb02.style.animationPlayState = 'running';
+                        }
+                        if (titleLayerCopy01) {
+                            titleLayerCopy01.style.animationDelay = '1.6s';
+                            titleLayerCopy01.style.animationPlayState = 'running';
+                        }
+                        if (titleLayerCopy02) {
+                            titleLayerCopy02.style.animationDelay = '2.4s';
+                            titleLayerCopy02.style.animationPlayState = 'running';
+                        }
                     }, 300);
                 }
             }
